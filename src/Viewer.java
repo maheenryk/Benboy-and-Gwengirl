@@ -92,19 +92,21 @@ public class Viewer extends JPanel {
 		// Draw player
 		drawPlayer(x, y, width, height, texture, g);
 
+		drawPlatforms(g);
+
 		// Draw Bullets
 		// change back
-		gameworld.getBullets().forEach((temp) -> {
+		gameworld.getPlayer().getBulletList().forEach((temp) -> {
 			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
 					(int) temp.getHeight(), temp.getTexture(), g);
 		});
 
-		// Draw Enemies
-		gameworld.getEnemies().forEach((temp) -> {
-			drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
-					(int) temp.getHeight(), temp.getTexture(), g);
+		// // Draw Enemies
+		// gameworld.getEnemies().forEach((temp) -> {
+		// 	drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
+		// 			(int) temp.getHeight(), temp.getTexture(), g);
 
-		});
+		// });
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
@@ -147,9 +149,12 @@ public class Viewer extends JPanel {
 		File TextureToLoad = new File(texture); // should work okay on OSX and Linux but check if you have issues
 												// depending your eclipse install or if your running this without an IDE
 		try {
-			Image myImage = ImageIO.read(TextureToLoad);
-			// 64 by 128
-			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, 63, 127, null);
+			BufferedImage myImage = ImageIO.read(TextureToLoad);
+			// Draw the entire bullet sprite without cropping
+			int imgWidth = myImage.getWidth();
+			int imgHeight = myImage.getHeight();
+
+			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, imgWidth, imgHeight, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -161,17 +166,13 @@ public class Viewer extends JPanel {
 		File TextureToLoad = new File(texture); // should work okay on OSX and Linux but check if you have issues
 												// depending your eclipse install or if your running this without an IDE
 		try {
-			Image myImage = ImageIO.read(TextureToLoad);
-			// The spirte is 32x32 pixel wide and 4 of them are placed together so we need
-			// to grab a different one each time
-			// remember your training :-) computer science everything starts at 0 so 32
-			// pixels gets us to 31
-			int currentPositionInAnimation = ((int) ((CurrentAnimationTime % 40) / 10)) * 32; // slows down animation so
-																								// every 10 frames we
-																								// get another frame so
-																								// every 100ms
-			g.drawImage(myImage, x, y, x + width, y + height, currentPositionInAnimation, 0,
-					currentPositionInAnimation + 31, 32, null);
+			BufferedImage myImage = ImageIO.read(TextureToLoad);
+			// Draw the entire sprite without cropping
+			int imgWidth = myImage.getWidth();
+			int imgHeight = myImage.getHeight();
+
+			g.drawImage(myImage, x, y, x + width, y + height, 0, 0,
+					imgWidth, imgHeight, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -184,6 +185,13 @@ public class Viewer extends JPanel {
 		// Bullets from https://opengameart.org/forumtopic/tatermands-art
 		// background image from
 		// https://www.needpix.com/photo/download/677346/space-stars-nebula-background-galaxy-universe-free-pictures-free-photos-free-images
+
+	}
+
+	private void drawPlatforms(Graphics g) {
+		gameworld.getPlatforms().forEach((temp) -> {
+			temp.draw((Graphics2D) g);
+		});
 
 	}
 

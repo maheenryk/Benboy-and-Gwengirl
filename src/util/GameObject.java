@@ -1,4 +1,7 @@
 package util;
+
+import java.awt.Rectangle;
+
 /*
  * Created by Abraham Campbell on 15/01/2020.
  *   Copyright (c) 2020  Abraham Campbell
@@ -61,6 +64,10 @@ public class GameObject {
 
 	public int getHeight() {
 		return height;
+	}
+
+	public Rectangle getHitbox() {
+		return new Rectangle((int)(centre.getX()-width/2),(int)(centre.getY()-height/2),width,height);
 	}
 
 	public String getTexture() {

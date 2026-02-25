@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
@@ -51,15 +53,29 @@ public class MainWindow {
 	private static boolean startGame = false;
 	private JLabel BackgroundImageForStartMenu;
 
+	Player player;
+
 	public MainWindow() {
+
+		player = new Player(400, 300, this);
+
 		frame.setSize(1000, 1000); // you can customise this later and adapt it to change on size.
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // If exit // you can modify with your way of quitting ,
-																// just is a template.
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		// If exit you can modify with your way of quitting, just is a template.
+
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frame.setLocation((int) (screenSize.getWidth() / 2 - 500), (int) (screenSize.getHeight() / 2 - 500)); 
+		// center the window 
+
 		frame.setLayout(null);
+		frame.setResizable(false);
+		frame.setTitle("BenBoy and GwenGirl");
 		frame.add(canvas);
 		canvas.setBounds(0, 0, 1000, 1000);
-		canvas.setBackground(new Color(255, 255, 255)); // white background replaced by Space background but if you
-														// remove the background method this will draw a white screen
+		canvas.setBackground(new Color(255, 255, 255)); 
+		// white background replaced by Space background but if you
+		// remove the background method this will draw a white screen
+
 		canvas.setVisible(false); // this will become visible after you press the key.
 
 		JButton startMenuButton = new JButton("Start Game"); // start button
@@ -70,8 +86,7 @@ public class MainWindow {
 				BackgroundImageForStartMenu.setVisible(false);
 				canvas.setVisible(true);
 				canvas.addKeyListener(Controller); // adding the controller to the Canvas
-				canvas.requestFocusInWindow(); // making sure that the Canvas is in focus so keyboard input will be
-												// taking in .
+				canvas.requestFocusInWindow(); // making sure that the Canvas is in focus so keyboard input will be taking in
 				startGame = true;
 			}
 		});
@@ -79,9 +94,11 @@ public class MainWindow {
 		startMenuButton.setBounds(400, 500, 200, 40);
 
 		// loading background image
-		File BackroundToLoad = new File("res/startscreen.png"); // should work okay on OSX and Linux but check if you
-																// have issues depending your eclipse install or if your
-																// running this without an IDE
+		File BackroundToLoad = new File("res/startscreen.png"); 
+		// should work okay on OSX and Linux but check if you
+		// have issues depending your eclipse install or if your
+		// running this without an IDE
+
 		try {
 			BufferedImage myPicture = ImageIO.read(BackroundToLoad);
 			BackgroundImageForStartMenu = new JLabel(new ImageIcon(myPicture));
@@ -97,12 +114,12 @@ public class MainWindow {
 
 	public static void main(String[] args) {
 		MainWindow hello = new MainWindow(); // sets up environment
-		while (true) // not nice but remember we do just want to keep looping till the end. // this
-						// could be replaced by a thread but again we want to keep things simple
-		{
+		while (true) {
+			// not nice but remember we do just want to keep looping till the end. this
+			// could be replaced by a thread but again we want to keep things simple
+			
 			// swing has timer class to help us time this but I'm writing my own, you can of
 			// course use the timer, but I want to set FPS and display it
-
 			int TimeBetweenFrames = 1000 / TargetFPS;
 			long FrameCheck = System.currentTimeMillis() + (long) TimeBetweenFrames;
 

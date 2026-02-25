@@ -32,16 +32,17 @@ SOFTWARE.
  */
 public class Model {
 
-	private GameObject Player;
+	private Player player;
 	private Controller controller = Controller.getInstance();
 	private CopyOnWriteArrayList<GameObject> EnemiesList = new CopyOnWriteArrayList<GameObject>();
-	private CopyOnWriteArrayList<GameObject> BulletList = new CopyOnWriteArrayList<GameObject>();
 	private int Score = 0;
+
+	private CopyOnWriteArrayList<Platform> PlatformList = new CopyOnWriteArrayList<Platform>();
 
 	public Model() {
 		// setup game world
 		// Player
-		Player = new GameObject("res/Lightning.png", 50, 50, new Point3f(500, 500, 0));
+		player = new Player(500, 500, null);
 		// Enemies starting with four
 
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
@@ -49,17 +50,21 @@ public class Model {
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 500), 0, 0)));
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
 
+		// Platforms
+        for (int i = 50; i < 950; i += 50) {
+            PlatformList.add(new Platform(i, 900, 50, 50));
+        }
 	}
 
 	// This is the heart of the game , where the model takes in all the inputs
 	// ,decides the outcomes and then changes the model accordingly.
 	public void gamelogic() {
 		// Player Logic first
-		playerLogic();
+		player.playerLogic();
 		// Enemy Logic next
 		enemyLogic();
 		// Bullets move next
-		bulletLogic();
+		player.bulletLogic();
 		// interactions between objects
 		gameLogic();
 
@@ -73,11 +78,11 @@ public class Model {
 		// using enhanced for-loop style as it makes it alot easier both code wise and
 		// reading wise too
 		for (GameObject temp : EnemiesList) {
-			for (GameObject Bullet : BulletList) {
+			for (GameObject Bullet : player.getBulletList()) {
 				if (Math.abs(temp.getCentre().getX() - Bullet.getCentre().getX()) < temp.getWidth()
 						&& Math.abs(temp.getCentre().getY() - Bullet.getCentre().getY()) < temp.getHeight()) {
 					EnemiesList.remove(temp);
-					BulletList.remove(Bullet);
+					player.getBulletList().remove(Bullet);
 					Score++;
 				}
 			}
@@ -110,70 +115,18 @@ public class Model {
 		}
 	}
 
-	private void bulletLogic() {
-		// TODO Auto-generated method stub
-		// move bullets
 
-		for (GameObject temp : BulletList) {
-			// check to move them
 
-			temp.getCentre().ApplyVector(new Vector3f(0, 1, 0));
-			// see if they hit anything
-
-			// see if they get to the top of the screen ( remember 0 is the top
-			if (temp.getCentre().getY() == 0) {
-				BulletList.remove(temp);
-			}
-		}
-
-	}
-
-	private void playerLogic() {
-
-		// smoother animation is possible if we make a target position // done but may
-		// try to change things for students
-
-		// check for movement and if you fired a bullet
-
-		if (Controller.getInstance().isKeyAPressed()) {
-			Player.getCentre().ApplyVector(new Vector3f(-2, 0, 0));
-		}
-
-		if (Controller.getInstance().isKeyDPressed()) {
-			Player.getCentre().ApplyVector(new Vector3f(2, 0, 0));
-		}
-
-		if (Controller.getInstance().isKeyWPressed()) {
-			Player.getCentre().ApplyVector(new Vector3f(0, 2, 0));
-		}
-
-		if (Controller.getInstance().isKeySPressed()) {
-			Player.getCentre().ApplyVector(new Vector3f(0, -2, 0));
-		}
-
-		if (Controller.getInstance().isKeySpacePressed()) {
-			CreateBullet();
-			Controller.getInstance().setKeySpacePressed(false);
-		}
-
-	}
-
-	private void CreateBullet() {
-		BulletList.add(new GameObject("res/Bullet.png", 32, 64,
-				new Point3f(Player.getCentre().getX(), Player.getCentre().getY(), 0.0f)));
-
-	}
-
-	public GameObject getPlayer() {
-		return Player;
+	public Player getPlayer() {
+		return player;
 	}
 
 	public CopyOnWriteArrayList<GameObject> getEnemies() {
 		return EnemiesList;
 	}
 
-	public CopyOnWriteArrayList<GameObject> getBullets() {
-		return BulletList;
+	public CopyOnWriteArrayList<Platform> getPlatforms() {
+		return PlatformList;
 	}
 
 	public int getScore() {
