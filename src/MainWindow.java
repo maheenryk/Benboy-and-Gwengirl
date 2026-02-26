@@ -46,9 +46,9 @@ SOFTWARE.
 
 public class MainWindow {
 	private static JFrame frame = new JFrame("Game"); // Change to the name of your game
-	private static Model gameworld = new Model();
-	private static Viewer canvas = new Viewer(gameworld);
-	private KeyListener Controller = new Controller();
+	private static Model gameworld;
+	private static Viewer canvas;
+	private KeyListener Controller;
 	private static int TargetFPS = 100;
 	private static boolean startGame = false;
 	private JLabel BackgroundImageForStartMenu;
@@ -57,7 +57,9 @@ public class MainWindow {
 
 	public MainWindow() {
 
-		player = new Player(400, 300, this);
+		gameworld = new Model(this);
+		canvas = new Viewer(gameworld);
+		Controller = new Controller();
 
 		frame.setSize(1000, 1000); // you can customise this later and adapt it to change on size.
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
@@ -154,8 +156,12 @@ public class MainWindow {
 		// Both these calls could be setup as a thread but we want to simplify the game
 		// logic for you.
 		// score update
-		frame.setTitle("Score =  " + gameworld.getScore());
+		//frame.setTitle("Score =  " + gameworld.getScore());
 
+	}
+
+	public Model getModel() {
+		return gameworld;
 	}
 
 }

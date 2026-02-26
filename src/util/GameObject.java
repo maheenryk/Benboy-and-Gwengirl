@@ -67,7 +67,8 @@ public class GameObject {
 	}
 
 	public Rectangle getHitbox() {
-		return new Rectangle((int)(centre.getX()-width/2),(int)(centre.getY()-height/2),width,height);
+		int hitboxWidth = width - 20; 
+		return new Rectangle((int)(centre.getX()+10),(int)(centre.getY()), hitboxWidth, height);
 	}
 
 	public String getTexture() {

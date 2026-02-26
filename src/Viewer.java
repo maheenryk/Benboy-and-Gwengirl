@@ -45,7 +45,7 @@ SOFTWARE.
 public class Viewer extends JPanel {
 	private long CurrentAnimationTime = 0;
 
-	Model gameworld = new Model();
+	Model gameworld;
 
 	public Viewer(Model World) {
 		this.gameworld = World;
@@ -79,12 +79,12 @@ public class Viewer extends JPanel {
 		super.paintComponent(g);
 		CurrentAnimationTime++; // runs animation time step
 
-		// Draw player Game Object
-		int x = (int) gameworld.getPlayer().getCentre().getX();
-		int y = (int) gameworld.getPlayer().getCentre().getY();
-		int width = (int) gameworld.getPlayer().getWidth();
-		int height = (int) gameworld.getPlayer().getHeight();
-		String texture = gameworld.getPlayer().getTexture();
+		// Draw player 1 Game Object
+		int x = (int) gameworld.getPlayer1().getCentre().getX();
+		int y = (int) gameworld.getPlayer1().getCentre().getY();
+		int width = (int) gameworld.getPlayer1().getWidth();
+		int height = (int) gameworld.getPlayer1().getHeight();
+		String texture = gameworld.getPlayer1().getTexture();
 
 		// Draw background
 		drawBackground(g);
@@ -92,11 +92,31 @@ public class Viewer extends JPanel {
 		// Draw player
 		drawPlayer(x, y, width, height, texture, g);
 
+		x = (int) gameworld.getPlayer2().getCentre().getX();
+		y = (int) gameworld.getPlayer2().getCentre().getY();
+		width = (int) gameworld.getPlayer2().getWidth();
+		height = (int) gameworld.getPlayer2().getHeight();
+		texture = gameworld.getPlayer2().getTexture();
+
+		drawPlayer(x, y, width, height, texture, g);
+
 		drawPlatforms(g);
+
+		// draw hitbox 
+		g.drawRect(gameworld.getPlayer1().getHitbox().x, gameworld.getPlayer1().getHitbox().y, gameworld.getPlayer1().getHitbox().width, gameworld.getPlayer1().getHitbox().height);
+		g.drawRect(gameworld.getPlayer2().getHitbox().x, gameworld.getPlayer2().getHitbox().y, gameworld.getPlayer2().getHitbox().width, gameworld.getPlayer2().getHitbox().height);
+		// for (Platform platform : gameworld.getPlatforms()) {
+		// 	g.drawRect(platform.hitbox().x, platform.hitbox().y, platform.hitbox().width, platform.hitbox().height);
+		// }
 
 		// Draw Bullets
 		// change back
-		gameworld.getPlayer().getBulletList().forEach((temp) -> {
+		gameworld.getPlayer1().getBulletListP1().forEach((temp) -> {
+			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
+					(int) temp.getHeight(), temp.getTexture(), g);
+		});
+
+		gameworld.getPlayer2().getBulletListP2().forEach((temp) -> {
 			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
 					(int) temp.getHeight(), temp.getTexture(), g);
 		});
@@ -132,12 +152,12 @@ public class Viewer extends JPanel {
 	}
 
 	private void drawBackground(Graphics g) {
-		File TextureToLoad = new File("res/spacebackground.png"); // should work okay on OSX and Linux but check if you
+		File TextureToLoad = new File("res/bg.jpg"); // should work okay on OSX and Linux but check if you
 																	// have issues depending your eclipse install or if
 																	// your running this without an IDE
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
-			g.drawImage(myImage, 0, 0, 1000, 1000, 0, 0, 1000, 1000, null);
+			g.drawImage(myImage, 0, 0, 1324, 1324, 0, 0, 1324, 1324, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -189,8 +209,22 @@ public class Viewer extends JPanel {
 	}
 
 	private void drawPlatforms(Graphics g) {
-		gameworld.getPlatforms().forEach((temp) -> {
-			temp.draw((Graphics2D) g);
+		gameworld.getPlatforms().forEach((platform) -> {
+			File TextureToLoad = new File(platform.getTexture()); // should work okay on OSX and Linux but check if you have issues
+												// depending your eclipse install or if your running this without an IDE
+			try {
+				BufferedImage myImage = ImageIO.read(TextureToLoad);
+				// Draw the entire sprite without cropping
+				int imgWidth = myImage.getWidth();
+				int imgHeight = myImage.getHeight();
+
+				g.drawImage(myImage, platform.x, platform.y, platform.x + platform.getWidth(), platform.y + platform.getHeight(), 0, 0,
+						imgWidth, imgHeight, null);
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 
 	}

@@ -32,17 +32,22 @@ SOFTWARE.
  */
 public class Model {
 
-	private Player player;
+	MainWindow mainWindow;
+	private Player player1;
+	private Player player2;
 	private Controller controller = Controller.getInstance();
 	private CopyOnWriteArrayList<GameObject> EnemiesList = new CopyOnWriteArrayList<GameObject>();
 	private int Score = 0;
 
 	private CopyOnWriteArrayList<Platform> PlatformList = new CopyOnWriteArrayList<Platform>();
 
-	public Model() {
+	public Model(MainWindow mainWindow) {
+		
+		this.mainWindow = mainWindow;
 		// setup game world
 		// Player
-		player = new Player(500, 500, null);
+		player1 = new Player(200, 700, 60, 80, mainWindow, "res/ben_still.png", 1);
+		player2 = new Player(600, 700, 60, 90, mainWindow, "res/gwen_still.png", 2);
 		// Enemies starting with four
 
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
@@ -60,11 +65,13 @@ public class Model {
 	// ,decides the outcomes and then changes the model accordingly.
 	public void gamelogic() {
 		// Player Logic first
-		player.playerLogic();
+		player1.playerLogic();
+		player2.playerLogic();
 		// Enemy Logic next
 		enemyLogic();
 		// Bullets move next
-		player.bulletLogic();
+		player1.bulletLogic();
+		player2.bulletLogic();
 		// interactions between objects
 		gameLogic();
 
@@ -78,11 +85,11 @@ public class Model {
 		// using enhanced for-loop style as it makes it alot easier both code wise and
 		// reading wise too
 		for (GameObject temp : EnemiesList) {
-			for (GameObject Bullet : player.getBulletList()) {
+			for (GameObject Bullet : player1.getBulletListP1()) {
 				if (Math.abs(temp.getCentre().getX() - Bullet.getCentre().getX()) < temp.getWidth()
 						&& Math.abs(temp.getCentre().getY() - Bullet.getCentre().getY()) < temp.getHeight()) {
 					EnemiesList.remove(temp);
-					player.getBulletList().remove(Bullet);
+					player1.getBulletListP1().remove(Bullet);
 					Score++;
 				}
 			}
@@ -117,8 +124,12 @@ public class Model {
 
 
 
-	public Player getPlayer() {
-		return player;
+	public Player getPlayer1() {
+		return player1;
+	}
+
+	public Player getPlayer2() {
+		return player2;
 	}
 
 	public CopyOnWriteArrayList<GameObject> getEnemies() {
