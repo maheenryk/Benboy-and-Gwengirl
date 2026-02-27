@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import util.PlayerObject;
 import util.GameObject;
 import util.Point3f;
 import util.Vector3f;
@@ -46,8 +47,8 @@ public class Model {
 		this.mainWindow = mainWindow;
 		// setup game world
 		// Player
-		player1 = new Player(200, 700, 60, 80, mainWindow, "res/ben_still.png", 1);
-		player2 = new Player(600, 700, 60, 90, mainWindow, "res/gwen_still.png", 2);
+		player1 = new Player(400, 500, 60, 80, mainWindow, "res/ben_still.png", 1);
+		player2 = new Player(1200, 500, 60, 90, mainWindow, "res/gwen_still.png", 2);
 		// Enemies starting with four
 
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
@@ -55,10 +56,24 @@ public class Model {
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 500), 0, 0)));
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
 
-		// Platforms
-        for (int i = 50; i < 950; i += 50) {
-            PlatformList.add(new Platform(i, 900, 50, 50));
+		// floor
+        for (int i = 50; i < 1550; i += 50) {
+            PlatformList.add(new Platform(i, 800, 50, 50));
         }
+
+		// wall
+		for (int i = 800; i > 0; i -= 50) {
+			PlatformList.add(new Platform(750, i, 50, 50));
+		}
+
+		for (int i = 800; i > 0; i -= 50) {
+			PlatformList.add(new Platform(800, i, 50, 50));
+		}
+
+		// platforms
+		for (int i = 50; i < 200; i += 50) {
+			PlatformList.add(new Platform(i, 650, 50, 50));
+		}
 	}
 
 	// This is the heart of the game , where the model takes in all the inputs
@@ -84,11 +99,11 @@ public class Model {
 		// see if they hit anything
 		// using enhanced for-loop style as it makes it alot easier both code wise and
 		// reading wise too
-		for (GameObject temp : EnemiesList) {
+		for (GameObject enemy : EnemiesList) {
 			for (GameObject Bullet : player1.getBulletListP1()) {
-				if (Math.abs(temp.getCentre().getX() - Bullet.getCentre().getX()) < temp.getWidth()
-						&& Math.abs(temp.getCentre().getY() - Bullet.getCentre().getY()) < temp.getHeight()) {
-					EnemiesList.remove(temp);
+				if (Math.abs(enemy.getCentre().getX() - Bullet.getCentre().getX()) < enemy.getWidth()
+						&& Math.abs(enemy.getCentre().getY() - Bullet.getCentre().getY()) < enemy.getHeight()) {
+					EnemiesList.remove(enemy);
 					player1.getBulletListP1().remove(Bullet);
 					Score++;
 				}

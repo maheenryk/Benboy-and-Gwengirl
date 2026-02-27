@@ -1,15 +1,14 @@
 import java.awt.Rectangle;
 
-import util.GameObject;
-import util.Point3f;
+import util.PlayerObject;
 
-public class Platform extends GameObject {
+public class Platform extends PlayerObject {
     
     int x, y;
     int width, height;
 
     public Platform(int x, int y, int width, int height) {
-        super("res/grass.png", 50, 50, new Point3f(x, y, 0));
+        super("res/grass.png", x, y, width, height);
         this.x = x;
         this.y = y;
         this.width = width;

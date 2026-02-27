@@ -80,8 +80,8 @@ public class Viewer extends JPanel {
 		CurrentAnimationTime++; // runs animation time step
 
 		// Draw player 1 Game Object
-		int x = (int) gameworld.getPlayer1().getCentre().getX();
-		int y = (int) gameworld.getPlayer1().getCentre().getY();
+		int x = (int) gameworld.getPlayer1().getX();
+		int y = (int) gameworld.getPlayer1().getY();
 		int width = (int) gameworld.getPlayer1().getWidth();
 		int height = (int) gameworld.getPlayer1().getHeight();
 		String texture = gameworld.getPlayer1().getTexture();
@@ -92,8 +92,8 @@ public class Viewer extends JPanel {
 		// Draw player
 		drawPlayer(x, y, width, height, texture, g);
 
-		x = (int) gameworld.getPlayer2().getCentre().getX();
-		y = (int) gameworld.getPlayer2().getCentre().getY();
+		x = (int) gameworld.getPlayer2().getX();
+		y = (int) gameworld.getPlayer2().getY();
 		width = (int) gameworld.getPlayer2().getWidth();
 		height = (int) gameworld.getPlayer2().getHeight();
 		texture = gameworld.getPlayer2().getTexture();
@@ -111,14 +111,14 @@ public class Viewer extends JPanel {
 
 		// Draw Bullets
 		// change back
-		gameworld.getPlayer1().getBulletListP1().forEach((temp) -> {
-			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
-					(int) temp.getHeight(), temp.getTexture(), g);
+		gameworld.getPlayer1().getBulletListP1().forEach((bullet) -> {
+			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
+					(int) bullet.getHeight(), bullet.getTexture(), g);
 		});
 
-		gameworld.getPlayer2().getBulletListP2().forEach((temp) -> {
-			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
-					(int) temp.getHeight(), temp.getTexture(), g);
+		gameworld.getPlayer2().getBulletListP2().forEach((bullet) -> {
+			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
+					(int) bullet.getHeight(), bullet.getTexture(), g);
 		});
 
 		// // Draw Enemies
@@ -157,7 +157,7 @@ public class Viewer extends JPanel {
 																	// your running this without an IDE
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
-			g.drawImage(myImage, 0, 0, 1324, 1324, 0, 0, 1324, 1324, null);
+			g.drawImage(myImage, 0, 0, 2250, 1324, 0, 0, 2250, 1324, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

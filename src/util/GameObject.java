@@ -79,6 +79,10 @@ public class GameObject {
 		 
 		return blanktexture; 
 	}
+
+	public boolean isCollidingWith(GameObject other) {
+		return this.getHitbox().intersects(other.getHitbox());
+	}
   
 }
 

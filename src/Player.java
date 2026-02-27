@@ -1,15 +1,18 @@
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.awt.Rectangle;
 
+import util.PlayerObject;
 import util.GameObject;
 import util.Point3f;
 import util.Vector3f;
 
-public class Player extends GameObject {
+public class Player extends PlayerObject {
 
     MainWindow mainWindow;
 
     int x, y;
+
+    int jumpSpeed = -12;
 
     float xspeed;
     float yspeed;
@@ -22,9 +25,11 @@ public class Player extends GameObject {
 	private CopyOnWriteArrayList<GameObject> BulletListP2 = new CopyOnWriteArrayList<GameObject>();
 
     public Player(int x, int y, int width, int height, MainWindow mainWindow, String imagePath, int playerNumber) {
-        super(imagePath, width, height, new Point3f(x, y, 0));
+        super(imagePath, x, y, width, height);
         this.mainWindow = mainWindow;
         this.playerNumber = playerNumber;
+        this.x = x;
+        this.y = y;
     }
 
     void playerLogic() {
@@ -41,18 +46,18 @@ public class Player extends GameObject {
             }
 
             // jump logic
-            // if (Controller.getInstance().isKeyWPressed()) {
-            //     hitbox = this.getHitbox();
-            //     hitbox.y += yspeed;
-            //     for (Platform platform : mainWindow.getModel().getPlatforms()) {
-            //         if (hitbox.intersects(platform.hitbox())) {
-            //             System.out.println("Jump!");
-            //             yspeed = 6;
-            //         }
-            //     }
-            //     hitbox.y--;
-            //     Controller.getInstance().setKeyWPressed(false);
-            // }
+            if (Controller.getInstance().isKeyWPressed()) {
+                hitbox = this.getHitbox();
+                hitbox.y++;
+                for (Platform platform : mainWindow.getModel().getPlatforms()) {
+                    if (hitbox.intersects(platform.hitbox())) {
+                        yspeed = jumpSpeed;
+                    }
+                }
+
+                hitbox.y--;
+                Controller.getInstance().setKeyWPressed(false);
+            }
 
             if (Controller.getInstance().isKeySPressed()) {
                 CreateBullet(1);
@@ -73,18 +78,18 @@ public class Player extends GameObject {
             }
 
             // jump logic
-            // if (Controller.getInstance().isKeyIPressed()) {
-            //     hitbox = this.getHitbox();
-            //     hitbox.y += yspeed;
-            //     for (Platform platform : mainWindow.getModel().getPlatforms()) {
-            //         if (hitbox.intersects(platform.hitbox())) {
-            //             System.out.println("Jump!");
-            //             yspeed = 6;
-            //         }
-            //     }
-            //     hitbox.y--;
-            //     Controller.getInstance().setKeyIPressed(false);
-            // }
+            if (Controller.getInstance().isKeyIPressed()) {
+                hitbox = this.getHitbox();
+                hitbox.y++;
+                for (Platform platform : mainWindow.getModel().getPlatforms()) {
+                    if (hitbox.intersects(platform.hitbox())) {
+                        yspeed = jumpSpeed;
+                    }
+                }
+
+                hitbox.y--;
+                Controller.getInstance().setKeyIPressed(false);
+            }
 
             if (Controller.getInstance().isKeyKPressed()) {
                 CreateBullet(2);
@@ -99,42 +104,57 @@ public class Player extends GameObject {
         if (xspeed < -5) xspeed = -5;
 
         // gravity
-        yspeed -= 0.3f;
+        yspeed += 0.4f;
+
+        // horizontal collision
+        hitbox = this.getHitbox();
+        hitbox.x += xspeed;
+        for (Platform platform : mainWindow.getModel().getPlatforms()) {
+            if (hitbox.intersects(platform.hitbox())) {
+                hitbox.x -= xspeed;
+                while (!hitbox.intersects(platform.hitbox())) {
+                    hitbox.x += Math.signum(xspeed);
+                }
+                hitbox.x -= Math.signum(xspeed);
+                xspeed = 0;
+                x = hitbox.x;
+                this.setX(x);
+            }
+        }
 
         // vertical collision
         hitbox = this.getHitbox();
         hitbox.y += yspeed;
         for (Platform platform : mainWindow.getModel().getPlatforms()) {
-            if (hitbox.intersects(platform.hitbox())) { 
-                // while (!hitbox.intersects(platform.hitbox())) {
-                //     hitbox.y += Math.signum(yspeed);
-                // }
-                // hitbox.y -= Math.signum(yspeed);
-                // yspeed = 0;
-
-                if ((Controller.getInstance().isKeyWPressed() && playerNumber == 1) || (Controller.getInstance().isKeyIPressed() && playerNumber == 2)) {
-                    System.out.println("Jump!");
-                    yspeed = 6;
-                    hitbox.y--;
-                    Controller.getInstance().setKeyWPressed(false);
-                    Controller.getInstance().setKeyIPressed(false);
+            if (hitbox.intersects(platform.hitbox())) {
+                hitbox.y -= yspeed;
+                while (!hitbox.intersects(platform.hitbox())) {
+                    hitbox.y += Math.signum(yspeed);
                 }
+                hitbox.y -= Math.signum(yspeed);
+                yspeed = 0;
+                y = hitbox.y;
+                this.setY(y);
             }
         }
 
-        this.getCentre().ApplyVector(new Vector3f(xspeed, 0, 0));
-        this.getCentre().ApplyVector(new Vector3f(0, yspeed, 0));
-    
+        x += xspeed;
+        y += yspeed;
+        this.setX(x);
+        this.setY(y);
+
+        hitbox.x = x;
+        hitbox.y = y;  
     }
 
     
 	private void CreateBullet(int playerNumber) {
 		if (playerNumber == 1) {
 			BulletListP1.add(new GameObject("res/Bullet.png", 64, 32,
-					new Point3f(this.getCentre().getX(), this.getCentre().getY(), 0.0f)));
+					new Point3f(this.getX(), this.getY(), 0.0f)));
 		} else if (playerNumber == 2) {
 			BulletListP2.add(new GameObject("res/Bullet.png", 64, 32,
-					new Point3f(this.getCentre().getX(), this.getCentre().getY(), 0.0f)));
+					new Point3f(this.getX(), this.getY(), 0.0f)));
 		}
 	}
 
@@ -142,27 +162,27 @@ public class Player extends GameObject {
 		// TODO Auto-generated method stub
 		// move bullets
 
-		for (GameObject temp : getBulletListP1()) {
+		for (GameObject bullet : getBulletListP1()) {
 			// check to move them
 
-			temp.getCentre().ApplyVector(new Vector3f(1, 0, 0));
+			bullet.getCentre().ApplyVector(new Vector3f(2, 0, 0));
 			// see if they hit anything
 
 			// see if they get to the top of the screen ( remember 0 is the top
-			if (temp.getCentre().getX() > 850) {
-				getBulletListP1().remove(temp);
+			if (bullet.getCentre().getX() > 1550) {
+				getBulletListP1().remove(bullet);
 			}
 		}
 
-        for (GameObject temp : getBulletListP2()) {
+        for (GameObject bullet : getBulletListP2()) {
             // check to move them
 
-            temp.getCentre().ApplyVector(new Vector3f(-1, 0, 0));
+            bullet.getCentre().ApplyVector(new Vector3f(-2, 0, 0));
             // see if they hit anything
 
             // see if they get to the top of the screen ( remember 0 is the top
-            if (temp.getCentre().getX() < -50) {
-                getBulletListP2().remove(temp);
+            if (bullet.getCentre().getX() < 50) {
+                getBulletListP2().remove(bullet);
             }
         }
 

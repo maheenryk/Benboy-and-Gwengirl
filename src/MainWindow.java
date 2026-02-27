@@ -61,19 +61,19 @@ public class MainWindow {
 		canvas = new Viewer(gameworld);
 		Controller = new Controller();
 
-		frame.setSize(1000, 1000); // you can customise this later and adapt it to change on size.
+		frame.setSize(1600, 900); // you can customise this later and adapt it to change on size.
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		// If exit you can modify with your way of quitting, just is a template.
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation((int) (screenSize.getWidth() / 2 - 500), (int) (screenSize.getHeight() / 2 - 500)); 
+		frame.setLocation((int) (screenSize.getWidth() / 2 - 800), (int) (screenSize.getHeight() / 2 - 450)); 
 		// center the window 
 
 		frame.setLayout(null);
 		frame.setResizable(false);
 		frame.setTitle("BenBoy and GwenGirl");
 		frame.add(canvas);
-		canvas.setBounds(0, 0, 1000, 1000);
+		canvas.setBounds(0, 0, 1600, 900);
 		canvas.setBackground(new Color(255, 255, 255)); 
 		// white background replaced by Space background but if you
 		// remove the background method this will draw a white screen
