@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import util.PlayerObject;
 import util.GameObject;
 import util.Point3f;
+import util.StaticObject;
 import util.Vector3f;
 
 /*
@@ -36,11 +34,10 @@ public class Model {
 	MainWindow mainWindow;
 	private Player player1;
 	private Player player2;
-	private Controller controller = Controller.getInstance();
 	private CopyOnWriteArrayList<GameObject> EnemiesList = new CopyOnWriteArrayList<GameObject>();
 	private int Score = 0;
 
-	private CopyOnWriteArrayList<Platform> PlatformList = new CopyOnWriteArrayList<Platform>();
+	private CopyOnWriteArrayList<StaticObject> StaticObjectList = new CopyOnWriteArrayList<StaticObject>();
 
 	public Model(MainWindow mainWindow) {
 		
@@ -57,23 +54,14 @@ public class Model {
 		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
 
 		// floor
-        for (int i = 50; i < 1550; i += 50) {
-            PlatformList.add(new Platform(i, 800, 50, 50));
-        }
+        StaticObjectList.add(new StaticObject(50, 800, 1500, 50, "res/grassFloor.png"));
 
 		// wall
-		for (int i = 800; i > 0; i -= 50) {
-			PlatformList.add(new Platform(750, i, 50, 50));
-		}
-
-		for (int i = 800; i > 0; i -= 50) {
-			PlatformList.add(new Platform(800, i, 50, 50));
-		}
+		StaticObjectList.add(new StaticObject(750, 50, 100, 750, "res/wall.png"));
 
 		// platforms
-		for (int i = 50; i < 200; i += 50) {
-			PlatformList.add(new Platform(i, 650, 50, 50));
-		}
+		addPlatforms();
+
 	}
 
 	// This is the heart of the game , where the model takes in all the inputs
@@ -138,6 +126,23 @@ public class Model {
 	}
 
 
+	private void addPlatforms(){
+
+		// ben's side
+		StaticObjectList.add(new StaticObject(150, 650, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(450, 550, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(550, 400, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(200, 300, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(100, 150, 150, 20, "res/dirtHalf.png"));
+
+		// gwen's side
+		StaticObjectList.add(new StaticObject(1300, 650, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(1000, 550, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(900, 400, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(1250, 300, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(1350, 150, 150, 20, "res/dirtHalf.png"));
+	}
+
 
 	public Player getPlayer1() {
 		return player1;
@@ -151,8 +156,8 @@ public class Model {
 		return EnemiesList;
 	}
 
-	public CopyOnWriteArrayList<Platform> getPlatforms() {
-		return PlatformList;
+	public CopyOnWriteArrayList<StaticObject> getPlatforms() {
+		return StaticObjectList;
 	}
 
 	public int getScore() {

@@ -4,13 +4,12 @@ import java.awt.Rectangle;
 import util.PlayerObject;
 import util.GameObject;
 import util.Point3f;
+import util.StaticObject;
 import util.Vector3f;
 
 public class Player extends PlayerObject {
 
     MainWindow mainWindow;
-
-    int x, y;
 
     int jumpSpeed = -12;
 
@@ -28,8 +27,6 @@ public class Player extends PlayerObject {
         super(imagePath, x, y, width, height);
         this.mainWindow = mainWindow;
         this.playerNumber = playerNumber;
-        this.x = x;
-        this.y = y;
     }
 
     void playerLogic() {
@@ -49,8 +46,8 @@ public class Player extends PlayerObject {
             if (Controller.getInstance().isKeyWPressed()) {
                 hitbox = this.getHitbox();
                 hitbox.y++;
-                for (Platform platform : mainWindow.getModel().getPlatforms()) {
-                    if (hitbox.intersects(platform.hitbox())) {
+                for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+                    if (hitbox.intersects(object.hitbox())) {
                         yspeed = jumpSpeed;
                     }
                 }
@@ -81,8 +78,8 @@ public class Player extends PlayerObject {
             if (Controller.getInstance().isKeyIPressed()) {
                 hitbox = this.getHitbox();
                 hitbox.y++;
-                for (Platform platform : mainWindow.getModel().getPlatforms()) {
-                    if (hitbox.intersects(platform.hitbox())) {
+                for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+                    if (hitbox.intersects(object.hitbox())) {
                         yspeed = jumpSpeed;
                     }
                 }
@@ -109,84 +106,73 @@ public class Player extends PlayerObject {
         // horizontal collision
         hitbox = this.getHitbox();
         hitbox.x += xspeed;
-        for (Platform platform : mainWindow.getModel().getPlatforms()) {
-            if (hitbox.intersects(platform.hitbox())) {
+        for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+            if (hitbox.intersects(object.hitbox())) {
                 hitbox.x -= xspeed;
-                while (!hitbox.intersects(platform.hitbox())) {
+                while (!hitbox.intersects(object.hitbox())) {
                     hitbox.x += Math.signum(xspeed);
                 }
                 hitbox.x -= Math.signum(xspeed);
                 xspeed = 0;
-                x = hitbox.x;
-                this.setX(x);
+                this.setX(hitbox.x);
             }
         }
 
         // vertical collision
         hitbox = this.getHitbox();
         hitbox.y += yspeed;
-        for (Platform platform : mainWindow.getModel().getPlatforms()) {
-            if (hitbox.intersects(platform.hitbox())) {
+        for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+            if (hitbox.intersects(object.hitbox())) {
                 hitbox.y -= yspeed;
-                while (!hitbox.intersects(platform.hitbox())) {
+                while (!hitbox.intersects(object.hitbox())) {
                     hitbox.y += Math.signum(yspeed);
                 }
                 hitbox.y -= Math.signum(yspeed);
                 yspeed = 0;
-                y = hitbox.y;
-                this.setY(y);
+                this.setY(hitbox.y);
             }
         }
 
-        x += xspeed;
-        y += yspeed;
-        this.setX(x);
-        this.setY(y);
+        
+        this.setX((int)(this.getX() + xspeed));
+        this.setY((int)(this.getY() + yspeed));
 
-        hitbox.x = x;
-        hitbox.y = y;  
+        hitbox.x = this.getX();
+        hitbox.y = this.getY();  
     }
 
     
-	private void CreateBullet(int playerNumber) {
-		if (playerNumber == 1) {
-			BulletListP1.add(new GameObject("res/Bullet.png", 64, 32,
-					new Point3f(this.getX(), this.getY(), 0.0f)));
-		} else if (playerNumber == 2) {
-			BulletListP2.add(new GameObject("res/Bullet.png", 64, 32,
-					new Point3f(this.getX(), this.getY(), 0.0f)));
-		}
-	}
+    private void CreateBullet(int playerNumber) {
+        
+        if (playerNumber == 1) {
+            BulletListP1.add(new GameObject("res/ben_bullet.png", 62, 48, new Point3f(this.getX(), this.getY(), 0.0f)));
+        } else if (playerNumber == 2) {
+            BulletListP2.add(new GameObject("res/gwen_bullet.png", 60, 47, new Point3f(this.getX(), this.getY(), 0.0f)));
+            // System.out.println("Bullet created for Player 2 at: " + this.getX());
+
+            // for (GameObject bullet : BulletListP2) {
+            //     System.out.println("Current bullet position for Player 2: " + bullet.getCentre().getX());
+            // }
+        }
+    }
 
     public void bulletLogic() {
-		// TODO Auto-generated method stub
-		// move bullets
-
-		for (GameObject bullet : getBulletListP1()) {
-			// check to move them
-
-			bullet.getCentre().ApplyVector(new Vector3f(2, 0, 0));
-			// see if they hit anything
-
-			// see if they get to the top of the screen ( remember 0 is the top
-			if (bullet.getCentre().getX() > 1550) {
-				getBulletListP1().remove(bullet);
-			}
-		}
-
-        for (GameObject bullet : getBulletListP2()) {
-            // check to move them
-
-            bullet.getCentre().ApplyVector(new Vector3f(-2, 0, 0));
-            // see if they hit anything
-
-            // see if they get to the top of the screen ( remember 0 is the top
-            if (bullet.getCentre().getX() < 50) {
-                getBulletListP2().remove(bullet);
+        // Move and remove bullets safely using CopyOnWriteArrayList
+        for (GameObject bullet : getBulletListP1()) {
+            bullet.getCentre().ApplyVector(new Vector3f(3f, 0, 0));
+            if (bullet.getCentre().getX() > 1500) {
+                BulletListP1.remove(bullet);
             }
         }
 
-	}
+        for (GameObject bullet : getBulletListP2()) {
+            bullet.getCentre().ApplyVector(new Vector3f(-3f, 0, 0));
+            //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
+            if (bullet.getCentre().getX() < 50) {
+                BulletListP2.remove(bullet);
+            }
+        }
+    }
 
     public CopyOnWriteArrayList<GameObject> getBulletListP1() {
 		return BulletListP1;

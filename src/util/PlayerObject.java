@@ -60,7 +60,7 @@ public class PlayerObject {
 		return blanktexture; 
 	}
 
-	public boolean isCollidingWith(PlayerObject other) {
+	public boolean isCollidingWith(GameObject other) {
 		return this.getHitbox().intersects(other.getHitbox());
 	}
 }

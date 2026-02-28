@@ -119,6 +119,8 @@ public class Viewer extends JPanel {
 		gameworld.getPlayer2().getBulletListP2().forEach((bullet) -> {
 			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
 					(int) bullet.getHeight(), bullet.getTexture(), g);
+
+			//System.out.println("Drawing bullet for Player 2 at: " + bullet.getCentre().getX());
 		});
 
 		// // Draw Enemies
@@ -218,7 +220,7 @@ public class Viewer extends JPanel {
 				int imgWidth = myImage.getWidth();
 				int imgHeight = myImage.getHeight();
 
-				g.drawImage(myImage, platform.x, platform.y, platform.x + platform.getWidth(), platform.y + platform.getHeight(), 0, 0,
+				g.drawImage(myImage, platform.getX(), platform.getY(), platform.getX() + platform.getWidth(), platform.getY() + platform.getHeight(), 0, 0,
 						imgWidth, imgHeight, null);
 
 			} catch (IOException e) {
