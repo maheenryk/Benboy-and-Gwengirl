@@ -1,9 +1,11 @@
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import util.GameObject;
+import util.MovingObject;
 import util.Point3f;
 import util.StaticObject;
 import util.Vector3f;
+
+import java.awt.Rectangle;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -34,7 +36,9 @@ public class Model {
 	MainWindow mainWindow;
 	private Player player1;
 	private Player player2;
-	private CopyOnWriteArrayList<GameObject> EnemiesList = new CopyOnWriteArrayList<GameObject>();
+	private StatScores player1Scores;
+    private StatScores player2Scores;
+	private CopyOnWriteArrayList<MovingObject> EnemiesList = new CopyOnWriteArrayList<MovingObject>();
 	private int Score = 0;
 
 	private CopyOnWriteArrayList<StaticObject> StaticObjectList = new CopyOnWriteArrayList<StaticObject>();
@@ -46,12 +50,15 @@ public class Model {
 		// Player
 		player1 = new Player(400, 500, 60, 80, mainWindow, "res/ben_still.png", 1);
 		player2 = new Player(1200, 500, 60, 90, mainWindow, "res/gwen_still.png", 2);
+		
+		player1Scores = new StatScores();
+		player2Scores = new StatScores();
+		
 		// Enemies starting with four
-
-		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
-		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 500), 0, 0)));
-		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 500), 0, 0)));
-		EnemiesList.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
+		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
+		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 500), 0, 0)));
+		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 500), 0, 0)));
+		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
 
 		// floor
         StaticObjectList.add(new StaticObject(50, 800, 1500, 50, "res/grassFloor.png"));
@@ -73,8 +80,7 @@ public class Model {
 		// Enemy Logic next
 		enemyLogic();
 		// Bullets move next
-		player1.bulletLogic();
-		player2.bulletLogic();
+		bulletLogic();
 		// interactions between objects
 		gameLogic();
 
@@ -87,8 +93,8 @@ public class Model {
 		// see if they hit anything
 		// using enhanced for-loop style as it makes it alot easier both code wise and
 		// reading wise too
-		for (GameObject enemy : EnemiesList) {
-			for (GameObject Bullet : player1.getBulletListP1()) {
+		for (MovingObject enemy : EnemiesList) {
+			for (MovingObject Bullet : player1.getBulletListP1()) {
 				if (Math.abs(enemy.getCentre().getX() - Bullet.getCentre().getX()) < enemy.getWidth()
 						&& Math.abs(enemy.getCentre().getY() - Bullet.getCentre().getY()) < enemy.getHeight()) {
 					EnemiesList.remove(enemy);
@@ -102,7 +108,7 @@ public class Model {
 
 	private void enemyLogic() {
 		// TODO Auto-generated method stub
-		for (GameObject temp : EnemiesList) {
+		for (MovingObject temp : EnemiesList) {
 			// Move enemies
 
 			temp.getCentre().ApplyVector(new Vector3f(0, -1, 0));
@@ -120,11 +126,60 @@ public class Model {
 		if (EnemiesList.size() < 2) {
 			while (EnemiesList.size() < 6) {
 				EnemiesList
-						.add(new GameObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 1000), 0, 0)));
+						.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 1000), 0, 0)));
 			}
 		}
 	}
 
+	public void bulletLogic() {
+        // Move and remove bullets safely using CopyOnWriteArrayList
+        for (MovingObject bullet : player1.getBulletListP1()) {
+            bullet.getCentre().ApplyVector(new Vector3f(3f, 0, 0));
+
+            if (bullet.getCentre().getX() > 50) {
+                Rectangle bulletHitbox = bullet.getHitbox();
+
+                if (bulletHitbox.intersects(mainWindow.getModel().getPlayer2().getPlayerHitbox())) {
+                    System.out.println("Player 2 hit!");
+                    player1.getBulletListP1().remove(bullet);
+
+                    player1Scores.increasePlayerScore();
+                    player2Scores.decreasePlayerHealth();
+
+                    player1Scores.displayStats(1);
+                    player2Scores.displayStats(2);
+                }
+
+                if (bullet.getCentre().getX() > 1500) {
+                    player1.getBulletListP1().remove(bullet);
+                }
+            }
+        }
+
+        for (MovingObject bullet : player2.getBulletListP2()) {
+            bullet.getCentre().ApplyVector(new Vector3f(-3f, 0, 0));
+            //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
+
+            if (bullet.getCentre().getX() < 1500) {
+                Rectangle bulletHitbox = bullet.getHitbox();
+
+                if (bulletHitbox.intersects(mainWindow.getModel().getPlayer1().getPlayerHitbox())) {
+                    System.out.println("\nPlayer 1 hit!");
+                    player2.getBulletListP2().remove(bullet);
+
+                    player2Scores.increasePlayerScore();
+                    player1Scores.decreasePlayerHealth();
+
+                    player1Scores.displayStats(1);
+                    player2Scores.displayStats(2);
+                }
+
+                if (bullet.getCentre().getX() < 50) {
+                    player2.getBulletListP2().remove(bullet);
+                }
+            }
+        }
+    }
 
 	private void addPlatforms(){
 
@@ -152,7 +207,7 @@ public class Model {
 		return player2;
 	}
 
-	public CopyOnWriteArrayList<GameObject> getEnemies() {
+	public CopyOnWriteArrayList<MovingObject> getEnemies() {
 		return EnemiesList;
 	}
 

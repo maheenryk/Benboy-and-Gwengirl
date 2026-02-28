@@ -1,13 +1,12 @@
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.awt.Rectangle;
 
-import util.PlayerObject;
 import util.GameObject;
+import util.MovingObject;
 import util.Point3f;
 import util.StaticObject;
-import util.Vector3f;
 
-public class Player extends PlayerObject {
+public class Player extends GameObject{
 
     MainWindow mainWindow;
 
@@ -16,21 +15,32 @@ public class Player extends PlayerObject {
     float xspeed;
     float yspeed;
 
-    Rectangle hitbox = this.getHitbox();
+    Rectangle hitbox = this.getPlayerHitbox();
 
     int playerNumber;
 
-	private CopyOnWriteArrayList<GameObject> BulletListP1 = new CopyOnWriteArrayList<GameObject>();
-	private CopyOnWriteArrayList<GameObject> BulletListP2 = new CopyOnWriteArrayList<GameObject>();
+	private CopyOnWriteArrayList<MovingObject> BulletListP1 = new CopyOnWriteArrayList<MovingObject>();
+	private CopyOnWriteArrayList<MovingObject> BulletListP2 = new CopyOnWriteArrayList<MovingObject>();
 
     public Player(int x, int y, int width, int height, MainWindow mainWindow, String imagePath, int playerNumber) {
         super(imagePath, x, y, width, height);
         this.mainWindow = mainWindow;
         this.playerNumber = playerNumber;
+
+        hitbox = this.getPlayerHitbox();
     }
 
     void playerLogic() {
 
+        playerControls();
+
+        playerMovementLogic();
+
+    }
+
+
+    private void playerControls() {
+        
         // Player 1 controls
         if (playerNumber == 1) {
 
@@ -44,7 +54,7 @@ public class Player extends PlayerObject {
 
             // jump logic
             if (Controller.getInstance().isKeyWPressed()) {
-                hitbox = this.getHitbox();
+                hitbox = this.getPlayerHitbox();
                 hitbox.y++;
                 for (StaticObject object : mainWindow.getModel().getPlatforms()) {
                     if (hitbox.intersects(object.hitbox())) {
@@ -62,7 +72,7 @@ public class Player extends PlayerObject {
             }
 
         } 
-        
+
         // Player 2 controls
         else if (playerNumber == 2) {
 
@@ -76,7 +86,7 @@ public class Player extends PlayerObject {
 
             // jump logic
             if (Controller.getInstance().isKeyIPressed()) {
-                hitbox = this.getHitbox();
+                hitbox = this.getPlayerHitbox();
                 hitbox.y++;
                 for (StaticObject object : mainWindow.getModel().getPlatforms()) {
                     if (hitbox.intersects(object.hitbox())) {
@@ -93,6 +103,9 @@ public class Player extends PlayerObject {
                 Controller.getInstance().setKeyKPressed(false);
             }
         }
+    }
+
+    private void playerMovementLogic() {
 
         if (xspeed > 0 && xspeed < 0.75) xspeed = 0;
         if (xspeed < 0 && xspeed > -0.75) xspeed = 0;
@@ -104,7 +117,7 @@ public class Player extends PlayerObject {
         yspeed += 0.4f;
 
         // horizontal collision
-        hitbox = this.getHitbox();
+        hitbox = this.getPlayerHitbox();
         hitbox.x += xspeed;
         for (StaticObject object : mainWindow.getModel().getPlatforms()) {
             if (hitbox.intersects(object.hitbox())) {
@@ -119,7 +132,7 @@ public class Player extends PlayerObject {
         }
 
         // vertical collision
-        hitbox = this.getHitbox();
+        hitbox = this.getPlayerHitbox();
         hitbox.y += yspeed;
         for (StaticObject object : mainWindow.getModel().getPlatforms()) {
             if (hitbox.intersects(object.hitbox())) {
@@ -140,14 +153,13 @@ public class Player extends PlayerObject {
         hitbox.x = this.getX();
         hitbox.y = this.getY();  
     }
-
     
     private void CreateBullet(int playerNumber) {
         
         if (playerNumber == 1) {
-            BulletListP1.add(new GameObject("res/ben_bullet.png", 62, 48, new Point3f(this.getX(), this.getY(), 0.0f)));
+            BulletListP1.add(new MovingObject("res/ben_bullet.png", 62, 48, new Point3f(this.getX(), this.getY(), 0.0f)));
         } else if (playerNumber == 2) {
-            BulletListP2.add(new GameObject("res/gwen_bullet.png", 60, 47, new Point3f(this.getX(), this.getY(), 0.0f)));
+            BulletListP2.add(new MovingObject("res/gwen_bullet.png", 60, 47, new Point3f(this.getX(), this.getY()+15, 0.0f)));
             // System.out.println("Bullet created for Player 2 at: " + this.getX());
 
             // for (GameObject bullet : BulletListP2) {
@@ -156,29 +168,11 @@ public class Player extends PlayerObject {
         }
     }
 
-    public void bulletLogic() {
-        // Move and remove bullets safely using CopyOnWriteArrayList
-        for (GameObject bullet : getBulletListP1()) {
-            bullet.getCentre().ApplyVector(new Vector3f(3f, 0, 0));
-            if (bullet.getCentre().getX() > 1500) {
-                BulletListP1.remove(bullet);
-            }
-        }
-
-        for (GameObject bullet : getBulletListP2()) {
-            bullet.getCentre().ApplyVector(new Vector3f(-3f, 0, 0));
-            //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
-            if (bullet.getCentre().getX() < 50) {
-                BulletListP2.remove(bullet);
-            }
-        }
-    }
-
-    public CopyOnWriteArrayList<GameObject> getBulletListP1() {
+    public CopyOnWriteArrayList<MovingObject> getBulletListP1() {
 		return BulletListP1;
 	}
 
-    public CopyOnWriteArrayList<GameObject> getBulletListP2() {
+    public CopyOnWriteArrayList<MovingObject> getBulletListP2() {
 		return BulletListP2;
 	}
 

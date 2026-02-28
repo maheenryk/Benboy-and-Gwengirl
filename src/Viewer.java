@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import util.GameObject;
+import util.MovingObject;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -103,8 +103,8 @@ public class Viewer extends JPanel {
 		drawPlatforms(g);
 
 		// draw hitbox 
-		g.drawRect(gameworld.getPlayer1().getHitbox().x, gameworld.getPlayer1().getHitbox().y, gameworld.getPlayer1().getHitbox().width, gameworld.getPlayer1().getHitbox().height);
-		g.drawRect(gameworld.getPlayer2().getHitbox().x, gameworld.getPlayer2().getHitbox().y, gameworld.getPlayer2().getHitbox().width, gameworld.getPlayer2().getHitbox().height);
+		g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
+		g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
 		// for (Platform platform : gameworld.getPlatforms()) {
 		// 	g.drawRect(platform.hitbox().x, platform.hitbox().y, platform.hitbox().width, platform.hitbox().height);
 		// }
@@ -177,6 +177,9 @@ public class Viewer extends JPanel {
 			int imgHeight = myImage.getHeight();
 
 			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, imgWidth, imgHeight, null);
+
+			// draw bullet hitbox
+			g.drawRect(x, y, width, height);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

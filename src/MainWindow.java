@@ -93,10 +93,10 @@ public class MainWindow {
 			}
 		});
 
-		startMenuButton.setBounds(400, 500, 200, 40);
+		startMenuButton.setBounds(700, 750, 200, 40);
 
 		// loading background image
-		File BackroundToLoad = new File("res/startscreen.png"); 
+		File BackroundToLoad = new File("res/start.png"); 
 		// should work okay on OSX and Linux but check if you
 		// have issues depending your eclipse install or if your
 		// running this without an IDE
@@ -104,7 +104,7 @@ public class MainWindow {
 		try {
 			BufferedImage myPicture = ImageIO.read(BackroundToLoad);
 			BackgroundImageForStartMenu = new JLabel(new ImageIcon(myPicture));
-			BackgroundImageForStartMenu.setBounds(0, 0, 1000, 1000);
+			BackgroundImageForStartMenu.setBounds(0, 0, 1600, 900);
 			frame.add(BackgroundImageForStartMenu);
 		} catch (IOException e) {
 			e.printStackTrace();

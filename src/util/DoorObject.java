@@ -1,12 +1,11 @@
 package util;
 import java.awt.Rectangle;
 
-public class StaticObject extends GameObject {
-    
+public class DoorObject extends GameObject{
     int x, y;
     int width, height;
 
-    public StaticObject(int x, int y, int width, int height, String imagePath) {
+    public DoorObject(int x, int y, int width, int height, String imagePath) {
         super(imagePath, x, y, width, height);
         this.x = x;
         this.y = y;
