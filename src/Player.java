@@ -56,7 +56,7 @@ public class Player extends GameObject{
             if (Controller.getInstance().isKeyWPressed()) {
                 hitbox = this.getPlayerHitbox();
                 hitbox.y++;
-                for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+                for (StaticObject object : mainWindow.getModel().getStaticObjects()) {
                     if (hitbox.intersects(object.hitbox())) {
                         yspeed = jumpSpeed;
                     }
@@ -88,7 +88,7 @@ public class Player extends GameObject{
             if (Controller.getInstance().isKeyIPressed()) {
                 hitbox = this.getPlayerHitbox();
                 hitbox.y++;
-                for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+                for (StaticObject object : mainWindow.getModel().getStaticObjects()) {
                     if (hitbox.intersects(object.hitbox())) {
                         yspeed = jumpSpeed;
                     }
@@ -119,7 +119,7 @@ public class Player extends GameObject{
         // horizontal collision
         hitbox = this.getPlayerHitbox();
         hitbox.x += xspeed;
-        for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+        for (StaticObject object : mainWindow.getModel().getStaticObjects()) {
             if (hitbox.intersects(object.hitbox())) {
                 hitbox.x -= xspeed;
                 while (!hitbox.intersects(object.hitbox())) {
@@ -134,7 +134,7 @@ public class Player extends GameObject{
         // vertical collision
         hitbox = this.getPlayerHitbox();
         hitbox.y += yspeed;
-        for (StaticObject object : mainWindow.getModel().getPlatforms()) {
+        for (StaticObject object : mainWindow.getModel().getStaticObjects()) {
             if (hitbox.intersects(object.hitbox())) {
                 hitbox.y -= yspeed;
                 while (!hitbox.intersects(object.hitbox())) {

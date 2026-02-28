@@ -1,20 +1,13 @@
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
-import util.MovingObject;
+import java.awt.Color;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -100,7 +93,7 @@ public class Viewer extends JPanel {
 
 		drawPlayer(x, y, width, height, texture, g);
 
-		drawPlatforms(g);
+		drawStaticObjects(g);
 
 		// draw hitbox 
 		g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
@@ -129,6 +122,8 @@ public class Viewer extends JPanel {
 		// 			(int) temp.getHeight(), temp.getTexture(), g);
 
 		// });
+
+		drawStats(g);
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
@@ -154,12 +149,12 @@ public class Viewer extends JPanel {
 	}
 
 	private void drawBackground(Graphics g) {
-		File TextureToLoad = new File("res/bg.jpg"); // should work okay on OSX and Linux but check if you
+		File TextureToLoad = new File("res/background.jpg"); // should work okay on OSX and Linux but check if you
 																	// have issues depending your eclipse install or if
 																	// your running this without an IDE
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
-			g.drawImage(myImage, 0, 0, 2250, 1324, 0, 0, 2250, 1324, null);
+			g.drawImage(myImage, 0, 0, 1600, 900, 0, 0, 1600, 900, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -213,9 +208,9 @@ public class Viewer extends JPanel {
 
 	}
 
-	private void drawPlatforms(Graphics g) {
-		gameworld.getPlatforms().forEach((platform) -> {
-			File TextureToLoad = new File(platform.getTexture()); // should work okay on OSX and Linux but check if you have issues
+	private void drawStaticObjects(Graphics g) {
+		gameworld.getStaticObjects().forEach((object) -> {
+			File TextureToLoad = new File(object.getTexture()); // should work okay on OSX and Linux but check if you have issues
 												// depending your eclipse install or if your running this without an IDE
 			try {
 				BufferedImage myImage = ImageIO.read(TextureToLoad);
@@ -223,8 +218,11 @@ public class Viewer extends JPanel {
 				int imgWidth = myImage.getWidth();
 				int imgHeight = myImage.getHeight();
 
-				g.drawImage(myImage, platform.getX(), platform.getY(), platform.getX() + platform.getWidth(), platform.getY() + platform.getHeight(), 0, 0,
+				g.drawImage(myImage, object.getX(), object.getY(), object.getX() + object.getWidth(), object.getY() + object.getHeight(), 0, 0,
 						imgWidth, imgHeight, null);
+				
+				// draw hitbox
+				//g.drawRect(object.getHitbox().x, object.getHitbox().y, object.getHitbox().width, object.getHitbox().height);
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -232,6 +230,24 @@ public class Viewer extends JPanel {
 			}
 		});
 
+	}
+
+	public void drawStats(Graphics g) {
+		// Draw player scores
+		// g.drawString("Player 1 Score: " + gameworld.getPlayer1Scores().getPlayerScore(), 100, 50);
+		// g.drawString("Player 2 Score: " + gameworld.getPlayer2Scores().getPlayerScore(), 1300, 50);
+
+		// Player 1 health bar
+		g.setColor(Color.BLACK);
+		g.fillRect(45, 15, 610, 30); // background of health bar
+		g.setColor(Color.GREEN);
+        g.fillRect(50, 20, gameworld.getPlayer1Scores().getPlayerHealth() * 6, 20);
+
+		// Player 2 health bar
+		g.setColor(Color.BLACK);
+		g.fillRect(940, 15, 610, 30); // background of health bar
+		g.setColor(Color.GREEN);
+        g.fillRect(945 + (600 - gameworld.getPlayer2Scores().getPlayerHealth() * 6), 20, gameworld.getPlayer2Scores().getPlayerHealth() * 6, 20);
 	}
 
 }

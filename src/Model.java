@@ -39,7 +39,6 @@ public class Model {
 	private StatScores player1Scores;
     private StatScores player2Scores;
 	private CopyOnWriteArrayList<MovingObject> EnemiesList = new CopyOnWriteArrayList<MovingObject>();
-	private int Score = 0;
 
 	private CopyOnWriteArrayList<StaticObject> StaticObjectList = new CopyOnWriteArrayList<StaticObject>();
 
@@ -99,7 +98,6 @@ public class Model {
 						&& Math.abs(enemy.getCentre().getY() - Bullet.getCentre().getY()) < enemy.getHeight()) {
 					EnemiesList.remove(enemy);
 					player1.getBulletListP1().remove(Bullet);
-					Score++;
 				}
 			}
 		}
@@ -117,9 +115,6 @@ public class Model {
 			if (temp.getCentre().getY() == 900.0f) // current boundary need to pass value to model
 			{
 				EnemiesList.remove(temp);
-
-				// enemies win so score decreased
-				Score--;
 			}
 		}
 
@@ -211,13 +206,17 @@ public class Model {
 		return EnemiesList;
 	}
 
-	public CopyOnWriteArrayList<StaticObject> getPlatforms() {
+	public CopyOnWriteArrayList<StaticObject> getStaticObjects() {
 		return StaticObjectList;
 	}
 
-	public int getScore() {
-		return Score;
-	}
+	public StatScores getPlayer1Scores() {
+		return player1Scores;
+    }
+
+    public StatScores getPlayer2Scores() {
+        return player2Scores;
+    }
 
 }
 
