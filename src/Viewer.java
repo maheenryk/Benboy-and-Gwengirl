@@ -116,7 +116,7 @@ public class Viewer extends JPanel {
 
 		// Draw player
 		drawPlayer(x, y, width, height, movingLeft, texture, g);
-		g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
+		//g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
 
 		x = (int) gameworld.getPlayer2().getX();
 		y = (int) gameworld.getPlayer2().getY();
@@ -126,7 +126,7 @@ public class Viewer extends JPanel {
 		texture = gameworld.getPlayer2().getTexture();
 
 		drawPlayer(x, y, width, height, movingLeft, texture, g);
-		g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
+		//g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
 
 
 		drawStaticObjects(g);
