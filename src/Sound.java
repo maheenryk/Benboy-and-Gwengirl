@@ -7,6 +7,11 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+// Student ID: 22305226
+// Student Name: Maheen Ahmed
+
+// Reference used: https://stackoverflow.com/a/64509714
+
 public class Sound {
     
     File benBulletSoundFile = new File("res/ben.wav");
@@ -31,7 +36,6 @@ public class Sound {
         Clip clip = null;
 
         try {
-
             ais = AudioSystem.getAudioInputStream(soundFile);
             clip = AudioSystem.getClip();
             clip.open(ais);

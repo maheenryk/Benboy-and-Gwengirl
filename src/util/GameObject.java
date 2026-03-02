@@ -2,6 +2,9 @@ package util;
 
 import java.awt.Rectangle;
 
+// Student ID: 22305226
+// Student Name: Maheen Ahmed
+
 public class GameObject {
     
     private int x, y;

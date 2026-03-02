@@ -6,6 +6,9 @@ import util.MovingObject;
 import util.Point3f;
 import util.StaticObject;
 
+// Student ID: 22305226
+// Student Name: Maheen Ahmed
+
 public class Player extends GameObject{
 
     MainWindow mainWindow;
@@ -126,6 +129,8 @@ public class Player extends GameObject{
         // gravity
         yspeed += 0.4f;
 
+
+        // Reference used for collision: https://www.youtube.com/watch?v=Icd2gAHDSfY&t=1220s
         // horizontal collision
         hitbox = this.getPlayerHitbox();
         hitbox.x += xspeed;

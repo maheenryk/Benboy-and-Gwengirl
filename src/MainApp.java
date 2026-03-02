@@ -1,5 +1,8 @@
 import util.UnitTests;
 
+// Student ID: 22305226
+// Student Name: Maheen Ahmed
+
 public class MainApp {
     
 	private static int TargetFPS = 100;

@@ -1,3 +1,6 @@
+// Student ID: 22305226
+// Student Name: Maheen Ahmed
+
 public class StatScores {
 
     private int playerScore;
