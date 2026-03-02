@@ -136,13 +136,13 @@ public class Viewer extends JPanel {
 		gameworld.getPlayer1().getBulletListP1().forEach((bullet) -> {
 			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
 					(int) bullet.getHeight(), bullet.getTexture(), g);
-			g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
+			//g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
 		});
 
 		gameworld.getPlayer2().getBulletListP2().forEach((bullet) -> {
 			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
 					(int) bullet.getHeight(), bullet.getTexture(), g);
-			g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
+			//g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
 			//System.out.println("Drawing bullet for Player 2 at: " + bullet.getCentre().getX());
 		});
 
