@@ -18,19 +18,21 @@ public class Sound {
     File gwenBulletSoundFile = new File("res/laser9.wav");
     File themeMusicFile = new File("res/theme.wav");
 
+    boolean theme;
+
     public void benBulletSound() {
-        playSound(benBulletSoundFile);
+        playSound(benBulletSoundFile, false);
     }
 
     public void gwenBulletSound() {
-        playSound(gwenBulletSoundFile);
+        playSound(gwenBulletSoundFile, false);
     }
 
     public void themeMusic() {
-        playSound(themeMusicFile);
+        playSound(themeMusicFile, true);
     }
 
-    public void playSound(File soundFile) {
+    public void playSound(File soundFile, boolean theme) {
         
         AudioInputStream ais = null;
         Clip clip = null;
@@ -47,6 +49,12 @@ public class Sound {
         }
 
         clip.setFramePosition(0);
-        clip.start();
+
+        if(theme){
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } else {
+            clip.start();
+        }
+
     }
 }
