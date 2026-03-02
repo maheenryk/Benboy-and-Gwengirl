@@ -124,6 +124,8 @@ public class Viewer extends JPanel {
 
 		drawPlayer(x, y, width, height, texture, g);
 
+		drawStaticObjects(g);
+
 		// Draw Bullets
 		// change back
 		gameworld.getPlayer1().getBulletListP1().forEach((bullet) -> {
@@ -138,7 +140,6 @@ public class Viewer extends JPanel {
 			//System.out.println("Drawing bullet for Player 2 at: " + bullet.getCentre().getX());
 		});
 
-		drawStaticObjects(g);
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
