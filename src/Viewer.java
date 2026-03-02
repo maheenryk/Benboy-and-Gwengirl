@@ -111,18 +111,23 @@ public class Viewer extends JPanel {
 		int y = (int) gameworld.getPlayer1().getY();
 		int width = (int) gameworld.getPlayer1().getWidth();
 		int height = (int) gameworld.getPlayer1().getHeight();
+		boolean movingLeft = gameworld.getPlayer1().getMovingLeft();
 		String texture = gameworld.getPlayer1().getTexture();
 
 		// Draw player
-		drawPlayer(x, y, width, height, texture, g);
+		drawPlayer(x, y, width, height, movingLeft, texture, g);
+		g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
 
 		x = (int) gameworld.getPlayer2().getX();
 		y = (int) gameworld.getPlayer2().getY();
 		width = (int) gameworld.getPlayer2().getWidth();
 		height = (int) gameworld.getPlayer2().getHeight();
+		movingLeft = gameworld.getPlayer2().getMovingLeft();
 		texture = gameworld.getPlayer2().getTexture();
 
-		drawPlayer(x, y, width, height, texture, g);
+		drawPlayer(x, y, width, height, movingLeft, texture, g);
+		g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
+
 
 		drawStaticObjects(g);
 
@@ -131,14 +136,16 @@ public class Viewer extends JPanel {
 		gameworld.getPlayer1().getBulletListP1().forEach((bullet) -> {
 			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
 					(int) bullet.getHeight(), bullet.getTexture(), g);
+			g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
 		});
 
 		gameworld.getPlayer2().getBulletListP2().forEach((bullet) -> {
 			drawBullet((int) bullet.getCentre().getX(), (int) bullet.getCentre().getY(), (int) bullet.getWidth(),
 					(int) bullet.getHeight(), bullet.getTexture(), g);
-
+			g.drawRect(bullet.getHitbox().x, bullet.getHitbox().y, bullet.getHitbox().width, bullet.getHitbox().height);
 			//System.out.println("Drawing bullet for Player 2 at: " + bullet.getCentre().getX());
 		});
+
 
 	}
 
@@ -214,17 +221,19 @@ public class Viewer extends JPanel {
 		}
 	}
 
-	private void drawPlayer(int x, int y, int width, int height, String texture, Graphics g) {
+	private void drawPlayer(int x, int y, int width, int height, boolean movingLeft, String texture, Graphics g) {
 		File TextureToLoad = new File(texture); // should work okay on OSX and Linux but check if you have issues
 												// depending your eclipse install or if your running this without an IDE
 		try {
 			BufferedImage myImage = ImageIO.read(TextureToLoad);
-			// Draw the entire sprite without cropping
 			int imgWidth = myImage.getWidth();
 			int imgHeight = myImage.getHeight();
 
-			g.drawImage(myImage, x, y, x + width, y + height, 0, 0,
-					imgWidth, imgHeight, null);
+			if (movingLeft){
+				g.drawImage(myImage, x, y, x + (width/2), y + height, 0, 0, imgWidth/2, imgHeight, null);
+			} else {
+				g.drawImage(myImage, x, y, x + (width/2), y + height, imgWidth/2, 0, imgWidth, imgHeight, null);
+			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

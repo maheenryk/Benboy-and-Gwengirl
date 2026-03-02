@@ -23,6 +23,8 @@ public class Player extends GameObject{
 
     int playerNumber;
 
+    boolean movingLeft = true;
+
 	private CopyOnWriteArrayList<MovingObject> BulletListP1 = new CopyOnWriteArrayList<MovingObject>();
 	private CopyOnWriteArrayList<MovingObject> BulletListP2 = new CopyOnWriteArrayList<MovingObject>();
 
@@ -52,8 +54,10 @@ public class Player extends GameObject{
                 xspeed *= 0.8;
             } else if (Controller.getInstance().isKeyAPressed()) {
                 xspeed -= playerHorizonalSpeed;
+                movingLeft = true;
             } else if (Controller.getInstance().isKeyDPressed()) {
                 xspeed += playerHorizonalSpeed;
+                movingLeft = false;
             }
 
             // jump logic
@@ -84,8 +88,10 @@ public class Player extends GameObject{
                 xspeed *= 0.8;
             } else if (Controller.getInstance().isKeyJPressed()) {
                 xspeed -= playerHorizonalSpeed;
+                movingLeft = true;
             } else if (Controller.getInstance().isKeyLPressed()) {
                 xspeed += playerHorizonalSpeed;
+                movingLeft = false;
             }
 
             // jump logic
@@ -181,5 +187,9 @@ public class Player extends GameObject{
     public CopyOnWriteArrayList<MovingObject> getBulletListP2() {
 		return BulletListP2;
 	}
+
+    public boolean getMovingLeft() {
+        return movingLeft;
+    }
 
 }

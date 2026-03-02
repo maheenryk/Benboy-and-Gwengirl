@@ -35,10 +35,6 @@ public class MovingObject {
 	private String textureLocation; 
 	private String blanktexture="res/blankSprite.png";
 	
-	public MovingObject() {  
-		
-	}
-	
     public MovingObject(String textureLocation,int width,int height,Point3f centre) { 
     	 hasTextured=true;
     	 this.textureLocation=textureLocation;
@@ -67,7 +63,7 @@ public class MovingObject {
 	}
 
 	public Rectangle getHitbox() {
-		int hitboxWidth = width - 20; 
+		int hitboxWidth = width/2; 
 		return new Rectangle((int)(centre.getX()+10),(int)(centre.getY()), hitboxWidth, height);
 	}
 

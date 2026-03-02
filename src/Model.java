@@ -62,8 +62,8 @@ public class Model {
 		this.winner = "";
 		// setup game world
 		// Player
-		player1 = new Player(400, 500, 60, 80, mainWindow, "res/ben_still.png", 1);
-		player2 = new Player(1200, 500, 60, 90, mainWindow, "res/gwen_still.png", 2);
+		player1 = new Player(400, 500, 94, 76, mainWindow, "res/ben.png", 1);
+		player2 = new Player(1200, 500, 80, 98, mainWindow, "res/gwen.png", 2);
 		
 		player1Scores = new StatScores();
 		player2Scores = new StatScores();
