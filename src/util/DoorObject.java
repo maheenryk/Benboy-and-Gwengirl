@@ -22,6 +22,6 @@ public class DoorObject extends GameObject{
     }
 
     public Rectangle hitbox() {
-        return this.getHitbox();
+        return new Rectangle(x+20, y, width - 40, height);
     }
 }

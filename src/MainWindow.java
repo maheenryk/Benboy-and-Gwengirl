@@ -9,11 +9,11 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import util.UnitTests;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -44,10 +44,17 @@ public class MainWindow {
 	private static JFrame frame = new JFrame("Game"); // Change to the name of your game
 	private static Model gameworld;
 	private static Viewer canvas;
-	private KeyListener Controller;
-	private static int TargetFPS = 100;
+	private Controller Controller;
 	private static boolean startGame = false;
-	private JLabel BackgroundImageForStartMenu;
+	private static JLabel BackgroundImageForStartMenu;
+	private static JLabel BackgroundImageForGameOver;
+	private static JButton vsMenuButton;
+	private static JButton coopMenuButton;
+	//private static JButton restartButton;
+
+	private boolean tutorialScreen = true;
+
+	private boolean versus;
 
 	Player player;
 
@@ -75,21 +82,75 @@ public class MainWindow {
 		// remove the background method this will draw a white screen
 
 		canvas.setVisible(false); // this will become visible after you press the key.
+		
+		File GameOver = new File("res/loss.png");
 
-		JButton startMenuButton = new JButton("Start Game"); // start button
-		startMenuButton.addActionListener(new ActionListener() {
+		try {
+			BufferedImage myPicture = ImageIO.read(GameOver);
+			BackgroundImageForGameOver = new JLabel(new ImageIcon(myPicture));
+			BackgroundImageForGameOver.setBounds(0, 0, 1600, 900);
+			frame.add(BackgroundImageForGameOver);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		BackgroundImageForGameOver.setVisible(false);
+		frame.add(BackgroundImageForGameOver);
+
+		//vsMenuButton = new JButton(); // start button
+		BufferedImage buttonIcon = null;
+		try {
+			buttonIcon = ImageIO.read(new File("res/vs.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		vsMenuButton = new JButton(new ImageIcon(buttonIcon));
+		//vsMenuButton.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
+		//vsMenuButton.setContentAreaFilled(false);
+		vsMenuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				startMenuButton.setVisible(false);
+				vsMenuButton.setVisible(false);
+				coopMenuButton.setVisible(false);
 				BackgroundImageForStartMenu.setVisible(false);
 				canvas.setVisible(true);
 				canvas.addKeyListener(Controller); // adding the controller to the Canvas
 				canvas.requestFocusInWindow(); // making sure that the Canvas is in focus so keyboard input will be taking in
 				startGame = true;
+				versus = true;
+				gameworld.setGameStart(true);
 			}
 		});
 
-		startMenuButton.setBounds(700, 750, 200, 40);
+		vsMenuButton.setBounds(200, 700, 340, 110);
+
+		BufferedImage buttonIcon2 = null;
+		try {
+			buttonIcon2 = ImageIO.read(new File("res/coop.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		coopMenuButton = new JButton(new ImageIcon(buttonIcon2));
+		//vsMenuButton.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
+		//vsMenuButton.setContentAreaFilled(false);
+		coopMenuButton.setVisible(true);
+		vsMenuButton.setVisible(true);
+		coopMenuButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				coopMenuButton.setVisible(false);
+				vsMenuButton.setVisible(false);
+				BackgroundImageForStartMenu.setVisible(false);
+				canvas.setVisible(true);
+				canvas.addKeyListener(Controller); // adding the controller to the Canvas
+				canvas.requestFocusInWindow(); // making sure that the Canvas is in focus so keyboard input will be taking in
+				startGame = true;
+				versus = false;
+				gameworld.setGameStart(true);
+			}
+		});
+
+		coopMenuButton.setBounds(1100, 700, 310, 112);
 
 		// loading background image
 		File BackroundToLoad = new File("res/start.png"); 
@@ -106,46 +167,74 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 
-		frame.add(startMenuButton);
+		frame.add(vsMenuButton);
+		frame.add(coopMenuButton);
+
+		// restartButton = new JButton("Restart Game");
+		// restartButton.setBounds(700, 750, 200, 40);
+		// restartButton.setVisible(false);
+		// restartButton.addActionListener(new ActionListener() {
+		// 	@Override
+		// 	public void actionPerformed(ActionEvent e) {
+		// 		restartButton.setVisible(false);
+		// 		setStartGame(true);
+		// 	}
+		// });
+
 		frame.setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		MainWindow hello = new MainWindow(); // sets up environment
-		while (true) {
-			// not nice but remember we do just want to keep looping till the end. this
-			// could be replaced by a thread but again we want to keep things simple
+	// public static void main(String[] args) {
+	// 	MainWindow window = new MainWindow(); // sets up environment
+	// 	while (true) {
+	// 		// not nice but remember we do just want to keep looping till the end. this
+	// 		// could be replaced by a thread but again we want to keep things simple
 			
-			// swing has timer class to help us time this but I'm writing my own, you can of
-			// course use the timer, but I want to set FPS and display it
-			int TimeBetweenFrames = 1000 / TargetFPS;
-			long FrameCheck = System.currentTimeMillis() + (long) TimeBetweenFrames;
+	// 		// swing has timer class to help us time this but I'm writing my own, you can of
+	// 		// course use the timer, but I want to set FPS and display it
+	// 		int TimeBetweenFrames = 1000 / TargetFPS;
+	// 		long FrameCheck = System.currentTimeMillis() + (long) TimeBetweenFrames;
 
-			// wait till next time step
-			while (FrameCheck > System.currentTimeMillis()) {
-			}
+	// 		// wait till next time step
+	// 		while (FrameCheck > System.currentTimeMillis()) {
+	// 		}
 
-			if (startGame) {
-				gameloop();
-			}
+	// 		if (startGame && !gameworld.isGameOver()) {
+	// 			gameloop();
+	// 		}
 
-			// UNIT test to see if framerate matches
-			UnitTests.CheckFrameRate(System.currentTimeMillis(), FrameCheck, TargetFPS);
+	// 		else if (gameworld.isGameOver()) {
+	// 			startGame = false;
+	// 			gameOverScreen();
+	// 		}
 
-		}
+	// 		// UNIT test to see if framerate matches
+	// 		UnitTests.CheckFrameRate(System.currentTimeMillis(), FrameCheck, TargetFPS);
 
-	}
+	// 	}
+
+	// }
 
 	// Basic Model-View-Controller pattern
-	private static void gameloop() {
+	public void gameloop() {
 		// GAMELOOP
 
 		// controller input will happen on its own thread
 		// So no need to call it explicitly
 
 		// model update
-		gameworld.gamelogic();
+		if (isGameVersus()) {
+			gameworld.gamelogicVS();
+		}
+		else if (!isGameVersus()){
+			gameworld.gamelogicCOOP();
+		}
 		// view update
+
+		//System.out.println("Game Status: " + gameworld.isGameOver());
+		// while(!gameworld.isGameOver()) {
+		// 	canvas.updateview();
+		// }
 
 		canvas.updateview();
 
@@ -156,8 +245,95 @@ public class MainWindow {
 
 	}
 
+	public void drawTutorialScreen(){
+		while (tutorialScreen){
+			canvas.drawTutorialScreen();
+			if (Controller.getInstance().isSpacePressed()){
+				System.out.print("end tutorial");
+				tutorialScreen = false;
+			}
+		}
+	}
+
+	// private static void gameOverScreen() {
+	// 	while (!startGame){
+	// 		canvas.setVisible(false);
+	// 		drawGameOver(gameworld.getWinner());
+	// 		restartButton.setVisible(true);
+	// 	}
+	// }
+
 	public Model getModel() {
 		return gameworld;
+	}
+
+	public void drawGameOver(String winner) {
+
+		//canvas.setVisible(false);
+
+		vsMenuButton.setVisible(false);
+		coopMenuButton.setVisible(false);
+
+		//restartButton.setVisible(false);
+
+		canvas.drawGameOver(winner);
+
+		// String imagePath = "";
+
+		// switch (winner) {
+		// 	case "p1":
+		// 		imagePath = "res/p1win.png";
+		// 		break;
+		// 	case "p2":
+		// 		imagePath = "res/p2win.png";
+		// 		break;
+		// 	case "players":
+		// 		imagePath = "res/win.png";
+		// 		break;
+		// 	case "computer":
+		// 		imagePath = "res/loss.png";
+		// 		break;
+		// 	default:
+		// 		break;
+		// }
+
+		// File GameOver = new File(imagePath);
+
+		// try {
+		// 	BufferedImage myPicture = ImageIO.read(GameOver);
+		// 	BackgroundImageForGameOver = new JLabel(new ImageIcon(myPicture));
+		// 	BackgroundImageForGameOver.setBounds(0, 0, 1600, 900);
+		// 	frame.add(BackgroundImageForGameOver);
+		// } catch (IOException e) {
+		// 	e.printStackTrace();
+		// }
+		
+		// BackgroundImageForGameOver.setVisible(true);
+
+	}
+
+	public Viewer getCanvas() {
+		return canvas;
+	}
+
+	public boolean isGameRunning() {
+		return startGame;
+	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
+
+	public JLabel getBackgroundImageForGameOver() {
+		return BackgroundImageForGameOver;
+	}
+
+	public void setStartGame(boolean b) {
+		startGame = b;
+	}
+
+	public boolean isGameVersus() {
+		return versus;
 	}
 
 }

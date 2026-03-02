@@ -4,6 +4,7 @@ import util.MovingObject;
 import util.Point3f;
 import util.StaticObject;
 import util.Vector3f;
+import util.DoorObject;
 
 import java.awt.Rectangle;
 
@@ -38,13 +39,27 @@ public class Model {
 	private Player player2;
 	private StatScores player1Scores;
     private StatScores player2Scores;
-	private CopyOnWriteArrayList<MovingObject> EnemiesList = new CopyOnWriteArrayList<MovingObject>();
+
+	private boolean gameOver;
+
+	private boolean gameStart;
+
+	private String winner;
+
+	private CopyOnWriteArrayList<MovingObject> BEnemiesList = new CopyOnWriteArrayList<MovingObject>();
+
+	private CopyOnWriteArrayList<MovingObject> GwEnemiesList = new CopyOnWriteArrayList<MovingObject>();
 
 	private CopyOnWriteArrayList<StaticObject> StaticObjectList = new CopyOnWriteArrayList<StaticObject>();
+
+	private CopyOnWriteArrayList<DoorObject> DoorObjectList = new CopyOnWriteArrayList<DoorObject>();
 
 	public Model(MainWindow mainWindow) {
 		
 		this.mainWindow = mainWindow;
+		this.gameOver = false;
+		this.gameStart = false;
+		this.winner = "";
 		// setup game world
 		// Player
 		player1 = new Player(400, 500, 60, 80, mainWindow, "res/ben_still.png", 1);
@@ -54,10 +69,15 @@ public class Model {
 		player2Scores = new StatScores();
 		
 		// Enemies starting with four
-		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 400), 0, 0)));
-		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 50 + 500), 0, 0)));
-		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 500), 0, 0)));
-		// EnemiesList.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 100 + 400), 0, 0)));
+		BEnemiesList.add(new MovingObject("res/alien.png", 46, 56, new Point3f(50, ((float) Math.random() * 50 + 200), 0)));
+		BEnemiesList.add(new MovingObject("res/alien.png", 46, 56, new Point3f(50, ((float) Math.random() * 50 + 400), 0)));
+		BEnemiesList.add(new MovingObject("res/alien.png", 46, 56, new Point3f(50, ((float) Math.random() * 100 + 500),0)));
+		BEnemiesList.add(new MovingObject("res/alien.png", 46, 56, new Point3f(50, ((float) Math.random() * 100 + 600), 0)));
+
+		GwEnemiesList.add(new MovingObject("res/witch.png", 30, 56, new Point3f(1550, ((float) Math.random() * 100 + 200), 0)));
+		GwEnemiesList.add(new MovingObject("res/witch.png", 30, 56, new Point3f(1550, ((float) Math.random() * 100 + 400), 0)));
+		GwEnemiesList.add(new MovingObject("res/witch.png", 30, 56, new Point3f(1550, ((float) Math.random() * 100 + 500), 0)));
+		GwEnemiesList.add(new MovingObject("res/witch.png", 30, 56, new Point3f(1550, ((float) Math.random() * 100 + 600), 0)));
 
 		// floor
         StaticObjectList.add(new StaticObject(50, 800, 1500, 50, "res/grassFloor.png"));
@@ -68,37 +88,93 @@ public class Model {
 		// platforms
 		addPlatforms();
 
+		DoorObjectList.add(new DoorObject(140, 60, 70, 110, "res/door.png"));
+		DoorObjectList.add(new DoorObject(1390, 60, 70, 110, "res/door.png"));
 	}
 
 	// This is the heart of the game , where the model takes in all the inputs
 	// ,decides the outcomes and then changes the model accordingly.
-	public void gamelogic() {
+	public void gamelogicVS() {
 		// Player Logic first
 		player1.playerLogic();
 		player2.playerLogic();
 		// Enemy Logic next
 		enemyLogic();
 		// Bullets move next
-		bulletLogic();
-		// interactions between objects
-		gameLogic();
+		bulletLogicVS();
+
+		if (player1Scores.getPlayerHealth() == 0 || player2Scores.getPlayerHealth() == 0) {
+			gameOver = true;
+			if (player1Scores.getPlayerHealth() == 0) {
+				winner = "p2";
+			} 
+			else if (player2Scores.getPlayerHealth() == 0) {
+				winner = "p1";
+			}
+		}
 
 	}
 
-	private void gameLogic() {
+	public void gamelogicCOOP() {
+		// Player Logic first
+		player1.playerLogic();
+		player2.playerLogic();
+		// Enemy Logic next
+		enemyLogic();
+		// Bullets move next
+		bulletLogicCOOP();
+		// interactions between objects
+		playerVEnemyLogic();
+
+		DoorObject door1 = DoorObjectList.get(0);
+		DoorObject door2 = DoorObjectList.get(1);
+
+		if ((player1.getPlayerHitbox().intersects(door1.hitbox())) && (player2.getPlayerHitbox().intersects(door2.hitbox()))) {
+			gameOver = true;
+			winner = "players";
+		}
+
+		if (player1Scores.getPlayerHealth() == 0 || player2Scores.getPlayerHealth() == 0) {
+			gameOver = true;
+			winner = "computer";
+		}
+
+	}
+
+	private void playerVEnemyLogic() {
 
 		// this is a way to increment across the array list data structure
 
 		// see if they hit anything
 		// using enhanced for-loop style as it makes it alot easier both code wise and
 		// reading wise too
-		for (MovingObject enemy : EnemiesList) {
+		for (MovingObject Benemy : BEnemiesList) {
+			for (MovingObject Bullet : player2.getBulletListP2()) {
+				if (Bullet.getHitbox().intersects(Benemy.getHitbox())) {
+					BEnemiesList.remove(Benemy);
+					player2.getBulletListP2().remove(Bullet);
+				}
+			}
+
+			if (player1.getPlayerHitbox().intersects(Benemy.getHitbox())){
+				BEnemiesList.remove(Benemy);
+				player1Scores.decreasePlayerHealth();
+				System.out.println("Player 1 hit!");
+			}
+		}
+
+		for (MovingObject Gwenemy : GwEnemiesList) {
 			for (MovingObject Bullet : player1.getBulletListP1()) {
-				if (Math.abs(enemy.getCentre().getX() - Bullet.getCentre().getX()) < enemy.getWidth()
-						&& Math.abs(enemy.getCentre().getY() - Bullet.getCentre().getY()) < enemy.getHeight()) {
-					EnemiesList.remove(enemy);
+				if (Bullet.getHitbox().intersects(Gwenemy.getHitbox())) {
+					GwEnemiesList.remove(Gwenemy);
 					player1.getBulletListP1().remove(Bullet);
 				}
+			}
+
+			if (player2.getPlayerHitbox().intersects(Gwenemy.getHitbox())){
+				GwEnemiesList.remove(Gwenemy);
+				player2Scores.decreasePlayerHealth();
+				System.out.println("Player 2 hit!");
 			}
 		}
 
@@ -106,30 +182,45 @@ public class Model {
 
 	private void enemyLogic() {
 		// TODO Auto-generated method stub
-		for (MovingObject temp : EnemiesList) {
+		for (MovingObject Benemy : BEnemiesList) {
 			// Move enemies
-
-			temp.getCentre().ApplyVector(new Vector3f(0, -1, 0));
+			Benemy.getCentre().ApplyVector(new Vector3f(1, 0, 0));
 
 			// see if they get to the top of the screen ( remember 0 is the top
-			if (temp.getCentre().getY() == 900.0f) // current boundary need to pass value to model
+			if (Benemy.getCentre().getX() > 750) // current boundary need to pass value to model
 			{
-				EnemiesList.remove(temp);
+				BEnemiesList.remove(Benemy);
 			}
 		}
 
-		if (EnemiesList.size() < 2) {
-			while (EnemiesList.size() < 6) {
-				EnemiesList
-						.add(new MovingObject("res/UFO.png", 50, 50, new Point3f(((float) Math.random() * 1000), 0, 0)));
+		if (BEnemiesList.size() < 2) {
+			while (BEnemiesList.size() < 6) {
+				BEnemiesList.add(new MovingObject("res/alien.png", 46, 56, new Point3f(50, ((float) Math.random() * 800), 0)));
+			}
+		}
+
+		for (MovingObject Gwenemy : GwEnemiesList) {
+			// Move enemies
+			Gwenemy.getCentre().ApplyVector(new Vector3f(-1, 0, 0));
+
+			// see if they get to the top of the screen ( remember 0 is the top
+			if (Gwenemy.getCentre().getX() < 750) // current boundary need to pass value to model
+			{
+				GwEnemiesList.remove(Gwenemy);
+			}
+		}
+
+		if (GwEnemiesList.size() < 2) {
+			while (GwEnemiesList.size() < 6) {
+				GwEnemiesList.add(new MovingObject("res/witch.png", 30, 56, new Point3f(1550, ((float) Math.random() * 800), 0)));
 			}
 		}
 	}
 
-	public void bulletLogic() {
+	public void bulletLogicVS() {
         // Move and remove bullets safely using CopyOnWriteArrayList
         for (MovingObject bullet : player1.getBulletListP1()) {
-            bullet.getCentre().ApplyVector(new Vector3f(3f, 0, 0));
+            bullet.getCentre().ApplyVector(new Vector3f(5f, 0, 0));
 
             if (bullet.getCentre().getX() > 50) {
                 Rectangle bulletHitbox = bullet.getHitbox();
@@ -152,7 +243,7 @@ public class Model {
         }
 
         for (MovingObject bullet : player2.getBulletListP2()) {
-            bullet.getCentre().ApplyVector(new Vector3f(-3f, 0, 0));
+            bullet.getCentre().ApplyVector(new Vector3f(-5f, 0, 0));
             //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
 
             if (bullet.getCentre().getX() < 1500) {
@@ -176,6 +267,42 @@ public class Model {
         }
     }
 
+	public void bulletLogicCOOP() {
+        // Move and remove bullets safely using CopyOnWriteArrayList
+        for (MovingObject bullet : player1.getBulletListP1()) {
+            bullet.getCentre().ApplyVector(new Vector3f(3f, 0, 0));
+
+            if (bullet.getCentre().getX() > 50) {
+                Rectangle bulletHitbox = bullet.getHitbox();
+
+                if (bulletHitbox.intersects(mainWindow.getModel().getPlayer2().getPlayerHitbox())) {
+
+                }
+
+                if (bullet.getCentre().getX() > 1500) {
+                    player1.getBulletListP1().remove(bullet);
+                }
+            }
+        }
+
+        for (MovingObject bullet : player2.getBulletListP2()) {
+            bullet.getCentre().ApplyVector(new Vector3f(-3f, 0, 0));
+            //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
+
+            if (bullet.getCentre().getX() < 1500) {
+                Rectangle bulletHitbox = bullet.getHitbox();
+
+                if (bulletHitbox.intersects(mainWindow.getModel().getPlayer1().getPlayerHitbox())) {
+
+                }
+
+                if (bullet.getCentre().getX() < 50) {
+                    player2.getBulletListP2().remove(bullet);
+                }
+            }
+        }
+    }
+
 	private void addPlatforms(){
 
 		// ben's side
@@ -183,14 +310,14 @@ public class Model {
 		StaticObjectList.add(new StaticObject(450, 550, 150, 20, "res/dirtHalf.png"));
 		StaticObjectList.add(new StaticObject(550, 400, 150, 20, "res/dirtHalf.png"));
 		StaticObjectList.add(new StaticObject(200, 300, 150, 20, "res/dirtHalf.png"));
-		StaticObjectList.add(new StaticObject(100, 150, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(100, 170, 150, 20, "res/dirtHalf.png"));
 
 		// gwen's side
 		StaticObjectList.add(new StaticObject(1300, 650, 150, 20, "res/dirtHalf.png"));
 		StaticObjectList.add(new StaticObject(1000, 550, 150, 20, "res/dirtHalf.png"));
 		StaticObjectList.add(new StaticObject(900, 400, 150, 20, "res/dirtHalf.png"));
 		StaticObjectList.add(new StaticObject(1250, 300, 150, 20, "res/dirtHalf.png"));
-		StaticObjectList.add(new StaticObject(1350, 150, 150, 20, "res/dirtHalf.png"));
+		StaticObjectList.add(new StaticObject(1350, 170, 150, 20, "res/dirtHalf.png"));
 	}
 
 
@@ -202,12 +329,20 @@ public class Model {
 		return player2;
 	}
 
-	public CopyOnWriteArrayList<MovingObject> getEnemies() {
-		return EnemiesList;
+	public CopyOnWriteArrayList<MovingObject> getBEnemies() {
+		return BEnemiesList;
+	}
+
+	public CopyOnWriteArrayList<MovingObject> getGwEnemiesList() {
+		return GwEnemiesList;
 	}
 
 	public CopyOnWriteArrayList<StaticObject> getStaticObjects() {
 		return StaticObjectList;
+	}
+
+	public CopyOnWriteArrayList<DoorObject> getDoorObjectList() {
+		return DoorObjectList;
 	}
 
 	public StatScores getPlayer1Scores() {
@@ -217,6 +352,22 @@ public class Model {
     public StatScores getPlayer2Scores() {
         return player2Scores;
     }
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+	
+	public boolean isGameStart() {
+		return gameStart;
+	}
+
+	public void setGameStart(boolean b) {
+		gameStart = b;
+	}
+
+	public String getWinner() {
+		return winner;
+	}
 
 }
 

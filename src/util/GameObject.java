@@ -53,7 +53,7 @@ public class GameObject {
 	}
 
 	public Rectangle getPlayerHitbox() {
-		return new Rectangle(x+10, y, hitboxWidth-20, height);
+		return new Rectangle(x, y, hitboxWidth-10, height);
 	}
 
 	public String getTexture() {

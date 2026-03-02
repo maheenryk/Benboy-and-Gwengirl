@@ -10,10 +10,14 @@ public class Player extends GameObject{
 
     MainWindow mainWindow;
 
+    Sound soundEffects = new Sound();
+
     int jumpSpeed = -12;
 
     float xspeed;
     float yspeed;
+
+    int playerHorizonalSpeed = 2;
 
     Rectangle hitbox = this.getPlayerHitbox();
 
@@ -47,9 +51,9 @@ public class Player extends GameObject{
             if (!Controller.getInstance().isKeyAPressed() && !Controller.getInstance().isKeyDPressed()) {
                 xspeed *= 0.8;
             } else if (Controller.getInstance().isKeyAPressed()) {
-                xspeed--;
+                xspeed -= playerHorizonalSpeed;
             } else if (Controller.getInstance().isKeyDPressed()) {
-                xspeed++;
+                xspeed += playerHorizonalSpeed;
             }
 
             // jump logic
@@ -79,9 +83,9 @@ public class Player extends GameObject{
             if (!Controller.getInstance().isKeyJPressed() && !Controller.getInstance().isKeyLPressed()) {
                 xspeed *= 0.8;
             } else if (Controller.getInstance().isKeyJPressed()) {
-                xspeed--;
+                xspeed -= playerHorizonalSpeed;
             } else if (Controller.getInstance().isKeyLPressed()) {
-                xspeed++;
+                xspeed += playerHorizonalSpeed;
             }
 
             // jump logic
@@ -110,8 +114,8 @@ public class Player extends GameObject{
         if (xspeed > 0 && xspeed < 0.75) xspeed = 0;
         if (xspeed < 0 && xspeed > -0.75) xspeed = 0;
 
-        if (xspeed > 5) xspeed = 5;
-        if (xspeed < -5) xspeed = -5;
+        if (xspeed > 7) xspeed = 7;
+        if (xspeed < -7) xspeed = -7;
 
         // gravity
         yspeed += 0.4f;
@@ -158,8 +162,10 @@ public class Player extends GameObject{
         
         if (playerNumber == 1) {
             BulletListP1.add(new MovingObject("res/ben_bullet.png", 62, 48, new Point3f(this.getX(), this.getY(), 0.0f)));
+            soundEffects.benBulletSound();
         } else if (playerNumber == 2) {
             BulletListP2.add(new MovingObject("res/gwen_bullet.png", 60, 47, new Point3f(this.getX(), this.getY()+15, 0.0f)));
+            soundEffects.gwenBulletSound();
             // System.out.println("Bullet created for Player 2 at: " + this.getX());
 
             // for (GameObject bullet : BulletListP2) {

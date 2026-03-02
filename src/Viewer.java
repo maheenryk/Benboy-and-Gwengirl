@@ -72,15 +72,46 @@ public class Viewer extends JPanel {
 		super.paintComponent(g);
 		CurrentAnimationTime++; // runs animation time step
 
+		// Draw background
+		drawBackground(g);
+
+		// draw hitbox 
+		//g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
+		//g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
+		
+		// for (Platform platform : gameworld.getPlatforms()) {
+		// 	g.drawRect(platform.hitbox().x, platform.hitbox().y, platform.hitbox().width, platform.hitbox().height);
+		// }
+
+		drawStats(g);
+
+		if (!gameworld.mainWindow.isGameVersus()){
+			// Draw Enemies
+			gameworld.getBEnemies().forEach((Benemy) -> {
+				drawEnemies((int) Benemy.getCentre().getX(), (int) Benemy.getCentre().getY(), (int) Benemy.getWidth(),
+						(int) Benemy.getHeight(), Benemy.getTexture(), g);
+
+			});
+
+			gameworld.getGwEnemiesList().forEach((Gwenemy) -> {
+				drawEnemies((int) Gwenemy.getCentre().getX(), (int) Gwenemy.getCentre().getY(), (int) Gwenemy.getWidth(),
+						(int) Gwenemy.getHeight(), Gwenemy.getTexture(), g);
+
+			});
+
+			gameworld.getDoorObjectList().forEach((door) -> {
+				drawDoors((int) door.getX(), (int) door.getY(), (int) door.getWidth(),
+						(int) door.getHeight(), door.getTexture(), g);
+				//g.drawRect(door.hitbox().x, door.hitbox().y, door.hitbox().width, door.hitbox().height);
+			});
+		}
+
 		// Draw player 1 Game Object
 		int x = (int) gameworld.getPlayer1().getX();
 		int y = (int) gameworld.getPlayer1().getY();
 		int width = (int) gameworld.getPlayer1().getWidth();
 		int height = (int) gameworld.getPlayer1().getHeight();
 		String texture = gameworld.getPlayer1().getTexture();
-
-		// Draw background
-		drawBackground(g);
 
 		// Draw player
 		drawPlayer(x, y, width, height, texture, g);
@@ -92,15 +123,6 @@ public class Viewer extends JPanel {
 		texture = gameworld.getPlayer2().getTexture();
 
 		drawPlayer(x, y, width, height, texture, g);
-
-		drawStaticObjects(g);
-
-		// draw hitbox 
-		g.drawRect(gameworld.getPlayer1().getPlayerHitbox().x, gameworld.getPlayer1().getPlayerHitbox().y, gameworld.getPlayer1().getPlayerHitbox().width, gameworld.getPlayer1().getPlayerHitbox().height);
-		g.drawRect(gameworld.getPlayer2().getPlayerHitbox().x, gameworld.getPlayer2().getPlayerHitbox().y, gameworld.getPlayer2().getPlayerHitbox().width, gameworld.getPlayer2().getPlayerHitbox().height);
-		// for (Platform platform : gameworld.getPlatforms()) {
-		// 	g.drawRect(platform.hitbox().x, platform.hitbox().y, platform.hitbox().width, platform.hitbox().height);
-		// }
 
 		// Draw Bullets
 		// change back
@@ -116,30 +138,22 @@ public class Viewer extends JPanel {
 			//System.out.println("Drawing bullet for Player 2 at: " + bullet.getCentre().getX());
 		});
 
-		// // Draw Enemies
-		// gameworld.getEnemies().forEach((temp) -> {
-		// 	drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(),
-		// 			(int) temp.getHeight(), temp.getTexture(), g);
-
-		// });
-
-		drawStats(g);
+		drawStaticObjects(g);
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
 		File TextureToLoad = new File(texture); // should work okay on OSX and Linux but check if you have issues
 												// depending your eclipse install or if your running this without an IDE
 		try {
-			Image myImage = ImageIO.read(TextureToLoad);
-			// The spirte is 32x32 pixel wide and 4 of them are placed together so we need
-			// to grab a different one each time
-			// remember your training :-) computer science everything starts at 0 so 32
-			// pixels gets us to 31
-			int currentPositionInAnimation = ((int) (CurrentAnimationTime % 4) * 32); // slows down animation so every
-																						// 10 frames we get another
-																						// frame so every 100ms
-			g.drawImage(myImage, x, y, x + width, y + height, currentPositionInAnimation, 0,
-					currentPositionInAnimation + 31, 32, null);
+			BufferedImage myImage = ImageIO.read(TextureToLoad);
+			// Draw the entire bullet sprite without cropping
+			int imgWidth = myImage.getWidth();
+			int imgHeight = myImage.getHeight();
+
+			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, imgWidth, imgHeight, null);
+
+			// draw bullet hitbox
+			// g.drawRect(x, y, width, height);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -148,8 +162,25 @@ public class Viewer extends JPanel {
 
 	}
 
+	private void drawDoors(int x, int y, int width, int height, String texture, Graphics g) {
+		File TextureToLoad = new File(texture); // should work okay on OSX and Linux but check if you have issues
+												// depending your eclipse install or if your running this without an IDE
+		try {
+			BufferedImage myImage = ImageIO.read(TextureToLoad);
+			// Draw the entire bullet sprite without cropping
+			int imgWidth = myImage.getWidth();
+			int imgHeight = myImage.getHeight();
+
+			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, imgWidth, imgHeight, null);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void drawBackground(Graphics g) {
-		File TextureToLoad = new File("res/background.jpg"); // should work okay on OSX and Linux but check if you
+		File TextureToLoad = new File("res/background.png"); // should work okay on OSX and Linux but check if you
 																	// have issues depending your eclipse install or if
 																	// your running this without an IDE
 		try {
@@ -174,7 +205,7 @@ public class Viewer extends JPanel {
 			g.drawImage(myImage, x, y, x + width, y + height, 0, 0, imgWidth, imgHeight, null);
 
 			// draw bullet hitbox
-			g.drawRect(x, y, width, height);
+			// g.drawRect(x, y, width, height);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -248,6 +279,59 @@ public class Viewer extends JPanel {
 		g.fillRect(940, 15, 610, 30); // background of health bar
 		g.setColor(Color.GREEN);
         g.fillRect(945 + (600 - gameworld.getPlayer2Scores().getPlayerHealth() * 6), 20, gameworld.getPlayer2Scores().getPlayerHealth() * 6, 20);
+	}
+
+	public void drawGameOver(String winner) {
+
+		Graphics g = this.getGraphics();
+		String imagePath = "";
+
+		switch (winner) {
+			case "p1":
+				imagePath = "res/p1win.png";
+				break;
+			case "p2":
+				imagePath = "res/p2win.png";
+				break;
+			case "players":
+				imagePath = "res/win.png";
+				break;
+			case "computer":
+				imagePath = "res/loss.png";
+				break;
+			default:
+				break;
+		}
+
+		File TextureToLoad = new File(imagePath);
+
+		try {
+			Image myImage = ImageIO.read(TextureToLoad);
+			g.drawImage(myImage, 0, 0, 1600, 900, 0, 0, 1600, 900, null);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void drawTutorialScreen(){
+
+		Graphics g = this.getGraphics();
+		File TextureToLoad = null;
+
+		if(gameworld.mainWindow.isGameVersus()){
+			TextureToLoad = new File("res/tutorial-vs.png");
+		} else {
+			TextureToLoad = new File("res/tutorial-coop.png");
+		}
+
+		try {
+			Image myImage = ImageIO.read(TextureToLoad);
+			g.drawImage(myImage, 400, 100, 1200, 800, 0, 0, 800, 600, null);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
