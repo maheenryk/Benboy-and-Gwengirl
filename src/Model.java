@@ -220,7 +220,7 @@ public class Model {
 	public void bulletLogicVS() {
         // Move and remove bullets safely using CopyOnWriteArrayList
         for (MovingObject bullet : player1.getBulletListP1()) {
-            bullet.getCentre().ApplyVector(new Vector3f(5f, 0, 0));
+            bullet.getCentre().ApplyVector(new Vector3f(10, 0, 0));
 
             if (bullet.getCentre().getX() > 50) {
                 Rectangle bulletHitbox = bullet.getHitbox();
@@ -243,7 +243,7 @@ public class Model {
         }
 
         for (MovingObject bullet : player2.getBulletListP2()) {
-            bullet.getCentre().ApplyVector(new Vector3f(-5f, 0, 0));
+            bullet.getCentre().ApplyVector(new Vector3f(-10, 0, 0));
             //System.out.println("Bullet position for Player 2: " + bullet.getCentre().getX());
 
             if (bullet.getCentre().getX() < 1500) {
